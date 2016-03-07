@@ -69,25 +69,25 @@ public class PerformAttack : NetworkBehaviour
             Vector3 hitPoint = hitInfo.point;
             GameObject go = hitInfo.collider.gameObject;
             //tempBulletHole = Instantiate(bulletHole);
-            if (go.tag == "Player")
-                tempBulletHole = (GameObject)Instantiate(bloodHole, hitPoint, Quaternion.FromToRotation(Vector3.up, hitInfo.normal));
-            else
-                tempBulletHole = (GameObject)Instantiate(bulletHole, hitPoint, Quaternion.FromToRotation(Vector3.up, hitInfo.normal));
-            tempBulletHole.transform.parent = go.transform;
-            Debug.Log("BulletHole's Parent: " + tempBulletHole.transform.parent.name);
-            Debug.Log("We hit " + hitInfo.collider.name);
+            //if (go.tag == "Player")
+            //    tempBulletHole = (GameObject)Instantiate(bloodHole, hitPoint, Quaternion.FromToRotation(Vector3.up, hitInfo.normal));
+            //else
+            //    tempBulletHole = (GameObject)Instantiate(bulletHole, hitPoint, Quaternion.FromToRotation(Vector3.up, hitInfo.normal));
+            //tempBulletHole.transform.parent = go.transform;
+            //Debug.Log("BulletHole's Parent: " + tempBulletHole.transform.parent.name);
+            //Debug.Log("We hit " + hitInfo.collider.name);
 
             HasHealth h = go.GetComponent<HasHealth>();
             if (h != null)
             {
                 h.ReceiveDamage(damage);
             }
-            if (debrisPrefab != null)
-            {
-                Instantiate(debrisPrefab, hitPoint, Quaternion.identity);
-            }
+            //if (debrisPrefab != null)
+            //{
+            //    Instantiate(debrisPrefab, hitPoint, Quaternion.identity);
+            //}
 
-            NetworkServer.Spawn(tempBulletHole);
+            //NetworkServer.Spawn(tempBulletHole);
 
             
         }
