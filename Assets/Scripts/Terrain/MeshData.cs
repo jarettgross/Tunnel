@@ -30,16 +30,16 @@ public class MeshData {
 		return vertices.Count;
 	}
 
-	public Vector3[] GetVertices() {
-		return vertices.ToArray();
+	public List<Vector3> GetVertices() {
+		return vertices;
 	}
 
-	public int[] GetIndices() {
-		return indices.ToArray ();
+	public List<int> GetIndices() {
+		return indices;
 	}
 
-	public Vector2[] GetUVs() {
-		return uvs.ToArray ();
+	public List<Vector2> GetUVs() {
+		return uvs;
 	}
 
 }
