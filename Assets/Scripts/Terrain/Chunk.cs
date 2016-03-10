@@ -174,36 +174,6 @@ public class Chunk {
 		return true;
 	}
 
-	/*
-	private MeshData GenerateMeshData(World world) {
-		int startX = (int) position.x;
-		int startY = (int) position.y;
-		int startZ = (int) position.z;
-
-		return GenerateMeshData (world, startX, startX + Chunk.CHUNK_X, startY, startY + Chunk.CHUNK_Y, startZ, startZ + Chunk.CHUNK_Z);
-	}
-
-	private MeshData GenerateMeshData(World world, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
-
-		MeshData meshData = new MeshData ();
-
-		for (int x = minX; x < maxX; x++) {
-			for (int y = minY; y < maxY; y++) {
-				for (int z = minZ; z < maxZ; z++) {
-
-					int xLoc = (int) (x * scale);
-					int yLoc = (int) (y * scale);
-					int zLoc = (int) (z * scale);
-
-					MarchingCubes.Polygonize (xLoc, yLoc, zLoc, meshData, world);
-				}
-			}
-		}
-
-		return meshData;
-	}
-	*/
-
 	private MeshData[] GenerateLayeredMeshData(World world) {
 		int startX = (int) position.x;
 		int startY = (int) position.y;
@@ -235,19 +205,5 @@ public class Chunk {
 
 		return meshData;
 	}
-
-
-//	private Mesh ToMesh(int layer) {
-//
-//		Mesh mesh = new Mesh();
-//
-//		mesh.vertices = vertices[layer];
-//		mesh.triangles = indices[layer];
-//		mesh.uv = uvs[layer];
-//		mesh.RecalculateNormals ();
-//		mesh.RecalculateBounds ();
-//
-//		return mesh;
-//	}
 
 }
