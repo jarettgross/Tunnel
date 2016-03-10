@@ -23,6 +23,8 @@ public class World : MonoBehaviour {
 
 	private const int scale = 1;
 	private float isolevel;
+	private float[] isolevels = new float[] {0.3f, 0.5f};
+	private bool[] destructable = new bool[] {false, true};
 
 	private Generator generator;
 	private HashSet<Vector3> deformSet;
@@ -176,7 +178,7 @@ public class World : MonoBehaviour {
 		GameObject chunkObject = Instantiate (GameObject.Find("Constants").gameObject.GetComponent<Constants> ().terrainObject);
 		chunkObject.name = "chunk";
 
-		Chunk chunk = new Chunk (new Vector3 (x * Chunk.CHUNK_X, y * Chunk.CHUNK_Y, z * Chunk.CHUNK_Z), scale, chunkObject);
+		Chunk chunk = new Chunk (new Vector3 (x * Chunk.CHUNK_X, y * Chunk.CHUNK_Y, z * Chunk.CHUNK_Z), scale, chunkObject, isolevels.Length);
 		chunks[x, y, z] = chunk;
 
 		Debug.Log ("Thread " + Thread.CurrentThread.ManagedThreadId + ": enqueueing chunk at: " + x + ", " + y + ", " + z);
@@ -327,9 +329,21 @@ public class World : MonoBehaviour {
 		}
 	}
 
+	public float[] Isolevels {
+		get { 
+			return isolevels;
+		}
+	}
+
 	public Generator Generator {
 		get { 
 			return generator;
+		}
+	}
+
+	public bool[] Destructable {
+		get { 
+			return destructable;
 		}
 	}
 }

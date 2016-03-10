@@ -6,4 +6,6 @@ public class Constants : MonoBehaviour {
 	public GameObject terrainObject;
 	public GameObject wallObject;
 
+	public Material[] terrainMaterials;
+
 }

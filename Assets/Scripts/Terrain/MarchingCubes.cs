@@ -11,27 +11,31 @@ using CoherentNoise;
 
 public class MarchingCubes {
 
-	public static void Polygonize(int x, int y, int z, MeshData meshData, World world) {
+	public static void Polygonize(int x, int y, int z, MeshData[] meshData, float[] isolevels, World world) {
 
 		int i, j, vert, idx;
-		int flagIndex = 0;
+		int levels = isolevels.Length;
 		float offset = 0.0f;
 		Vector3[] edgeVertex = new Vector3[12];
 		float[] cube = new float[12];
+		int flagIndex = 0;
 
-		FillCube (x, y, z, world, cube);
-
-		//Find which vertices are inside of the surface and which are outside
-		for(i = 0; i < 8; i++) 
-			if(cube[i] <= world.Isolevel) 
-				flagIndex |= 1 << i;
+		// Maps vertexId to level
+		int[] vertexMap = new int[8];
+		for (i = 0; i < 8; i++) {
+			// set default level to air
+			vertexMap [i] = levels;
+		}
+		flagIndex = FillCube (x, y, z, isolevels, world, cube, vertexMap);
 
 		//Find which edges are intersected by the surface
 		int edgeFlags = edgeTable[flagIndex];
 
 		//If the cube is entirely inside or outside of the surface, then there will be no intersections
-		if(edgeFlags == 0) 
+		if (edgeFlags == 0)
 			return;
+
+		int[] edgeMap = new int[12]; 
 
 		//Find the point of intersection of the surface with each edge
 		for(i = 0; i < 12; i++)
@@ -40,6 +44,7 @@ public class MarchingCubes {
 			if((edgeFlags & (1 << i)) != 0)
 			{
 				offset = GetOffset(cube[edgeConnection[i,0]], cube[edgeConnection[i,1]], world.Isolevel);
+				edgeMap [i] = Mathf.Min (vertexMap [edgeConnection [i, 0]], vertexMap [edgeConnection [i, 1]]);
 
 				edgeVertex[i].x = x + (vertexOffset[edgeConnection[i,0],0] + offset * edgeDirection[i,0]);
 				edgeVertex[i].y = y + (vertexOffset[edgeConnection[i,0],1] + offset * edgeDirection[i,1]);
@@ -52,15 +57,21 @@ public class MarchingCubes {
 		{
 			if(triTable[flagIndex][3 * i] < 0) break;
 
-			idx = meshData.GetNumVertices ();
-
 			Vector2[] uvs = new Vector2[3];
+
+			int[] verts = new int[3];
+			verts[0] = triTable[flagIndex][3 * i + 0];
+			verts[1] = triTable[flagIndex][3 * i + 1];
+			verts[2] = triTable[flagIndex][3 * i + 2];
+			int level = CalculateLevel (verts, edgeMap);
+
+			idx = meshData[level].GetNumVertices ();
 
 			for(j = 0; j < 3; j++)
 			{
 				vert = triTable[flagIndex][3 * i + j];
-				meshData.AddIndex(idx + windingOrder[j]);
-				meshData.AddVertex(edgeVertex[vert]);
+				meshData[level].AddIndex(idx + windingOrder[j]);
+				meshData[level].AddVertex(edgeVertex[vert]);
 			}
 
 			//Calculate the UVs
@@ -88,24 +99,61 @@ public class MarchingCubes {
 				uvs [1] = new Vector2 (edgeVertex[v2].x / (float)(world.SizeX * Chunk.CHUNK_X), edgeVertex[v2].y / (float)(world.SizeY * Chunk.CHUNK_Y));
 				uvs [2] = new Vector2 (edgeVertex[v3].x / (float)(world.SizeX * Chunk.CHUNK_X), edgeVertex[v3].y / (float)(world.SizeY * Chunk.CHUNK_Y));
 			}
-			meshData.AddUVs (uvs[0]);
-			meshData.AddUVs (uvs[1]);
-			meshData.AddUVs (uvs[2]);
+			meshData[level].AddUVs (uvs[0]);
+			meshData[level].AddUVs (uvs[1]);
+			meshData[level].AddUVs (uvs[2]);
 		}
 	}
 
-	static void FillCube(int x, int y, int z, World world, float[] cube)
+	static int FillCube(int x, int y, int z, float[] isolevels, World world, float[] cube, int[] vertexMap)
 	{
+		int levels = isolevels.Length;
+		int flagIndex = 0;
+
 		for (int i = 0; i < 8; i++) {
 			Vector3 position = new Vector3 (x + vertexOffset [i, 0], y + vertexOffset [i, 1], z + vertexOffset [i, 2]);
 
-			if (world.InDeformSet (position)) {
-				cube [i] = 1;
-			} else {
-				cube [i] = world.Generator.GetValue (position);
+			// get noise value
+			float value = world.Generator.GetValue (position);
+			vertexMap [i] = levels;
+
+			// find level of vertex
+			for (int j = 0; j < levels; j++) {
+				if (value <= isolevels [j]) {
+					vertexMap [i] = j;
+					break;
+				}
 			}
 
+
+			if (vertexMap [i] == levels) { // air
+				cube [i] = value;
+				continue;
+			} else if (world.InDeformSet (position) && world.Destructable[vertexMap[i]]) { // deformed and deformable
+				cube [i] = 1;
+				continue;
+			} else { // non deformed or non deformable
+				cube [i] = value;
+			}
+
+			flagIndex |= 1 << i;
 		}
+
+		return flagIndex;
+	}
+
+
+	static int CalculateLevel(int[] vertices, int[] vertexMap) {
+		int v0 = vertexMap [vertices [0]];
+		int v1 = vertexMap [vertices [1]];
+		int v2 = vertexMap [vertices [2]];
+
+		if (v0 == v1 || v0 == v2)
+			return v0;
+		if (v1 == v2)
+			return v1;
+
+		return Mathf.Min (v0, v1, v2);
 	}
 
 	// GetOffset finds the approximate point of intersection of the surface

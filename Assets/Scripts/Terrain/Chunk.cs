@@ -14,31 +14,78 @@ public class Chunk {
 	private Vector3 position;
 	private float scale;
 	private GameObject chunkObject;
+	private int layers;
 
-	private Vector3[] vertices;
-	private int[] indices;
-	private Vector2[] uvs;
+	private List<Vector3>[] vertices;
+	private List<int>[] indices;
+	private List<Vector2>[] uvs;
 
-	private Mesh mesh;
-
-	public Chunk(Vector3 _position, float _scale, GameObject _chunkObject) {
+	public Chunk(Vector3 _position, float _scale, GameObject _chunkObject, int _layers) {
 		position = _position;
 		scale = _scale;
 		chunkObject = _chunkObject;
+		layers = _layers;
+		vertices = new List<Vector3>[layers];
+		indices = new List<int>[layers];
+		uvs = new List<Vector2>[layers];
+
+		MeshRenderer meshRenderer = chunkObject.GetComponent<MeshRenderer> ();
+		meshRenderer.sharedMaterials = GameObject.Find ("Constants").GetComponent<Constants> ().terrainMaterials;
 	}
 
 	public void Build(World world) {
-		MeshData meshData = GenerateMeshData (world);
-		vertices = meshData.GetVertices ();
-		indices = meshData.GetIndices ();
-		uvs = meshData.GetUVs ();
-
+		MeshData[] meshData = GenerateLayeredMeshData (world);
+		for (int i = 0; i < layers; i++) {
+			vertices[i] = meshData[i].GetVertices ();
+			indices[i] = meshData[i].GetIndices ();
+			uvs[i] = meshData[i].GetUVs ();
+		}
 	}
 
 	public void ApplyMesh() {
-		Mesh mesh = ToMesh ();
-		chunkObject.GetComponent<MeshFilter> ().mesh = mesh;
-		chunkObject.GetComponent<MeshCollider> ().sharedMesh = mesh;
+
+		Mesh newMesh = new Mesh ();
+		newMesh.subMeshCount = layers;
+
+
+		List<Vector3> _vertices = new List<Vector3> ();
+		List<int>[] _indices = new List<int>[layers];
+		List<Vector2> _uvs = new List<Vector2> ();
+
+		// combine vertices and uvs
+		for (int i = 0; i < layers; i++) {
+			_vertices.AddRange (vertices [i]);
+			_uvs.AddRange (uvs [i]);
+		}
+
+		// recalculate indices
+		int offset = 0;
+		int size;
+		for (int i = 0; i < layers; i++) {
+			_indices [i] = new List<int> ();
+			size = indices [i].Count;
+			for (int j = 0; j < size; j++)
+				_indices [i].Add (indices [i] [j] + offset);
+			offset += size;
+		}
+
+		// update mesh vertices and uvs
+		newMesh.vertices = _vertices.ToArray ();
+		newMesh.uv = _uvs.ToArray ();
+
+		// update submesh indices
+		for (int i = 0; i < layers; i++) {
+			newMesh.SetTriangles (_indices [i], i);
+		}
+
+		// update with recalculated indices
+		// indices = _indices;
+
+		newMesh.RecalculateNormals ();
+		newMesh.RecalculateBounds ();
+
+		chunkObject.GetComponent<MeshFilter> ().mesh = newMesh;
+		chunkObject.GetComponent<MeshCollider> ().sharedMesh = newMesh;
 	} 
 
 	public void Deform(World world, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
@@ -53,44 +100,59 @@ public class Chunk {
 		int startZ = (int) Math.Max (minZ, position.z);
 		int endZ = (int) Math.Min (maxZ, position.z + Chunk.CHUNK_Z);
 
-		// examine current veritices
-		List<Vector3> containedVertices = new List<Vector3> ();
-		List<int> containedIndices = new List<int> ();
-		List<Vector2> containedUVs = new List<Vector2> ();
-		int count = 0;
-		for (int i = 0; i < vertices.Length; i += 3) {
-			
-			if (PointWithinArea (vertices [i], startX, endX, startY, endY, startZ, endZ)) {
-				if (PointWithinArea (vertices [i + 1], startX, endX, startY, endY, startZ, endZ)) {
-					if (PointWithinArea (vertices [i + 2], startX, endX, startY, endY, startZ, endZ)) {
-						continue;
+
+		List<Vector3>[] containedVertices = new List<Vector3>[layers];
+		List<int>[] containedIndices = new List<int>[layers];
+		List<Vector2>[] containedUVs = new List<Vector2>[layers];
+
+		for (int layer = 0; layer < layers; layer++) {
+
+			containedVertices [layer] = new List<Vector3> ();
+			containedIndices [layer] = new List<int> ();
+			containedUVs [layer] = new List<Vector2> ();
+
+			int count = 0;
+			int size = vertices [layer].Count;
+			for (int i = 0; i < size; i += 3) {
+
+				if (PointWithinArea (vertices [layer] [i], startX, endX, startY, endY, startZ, endZ)) {
+					if (PointWithinArea (vertices [layer] [i + 1], startX, endX, startY, endY, startZ, endZ)) {
+						if (PointWithinArea (vertices [layer] [i + 2], startX, endX, startY, endY, startZ, endZ)) {
+							continue;
+						}
 					}
 				}
-			}
 
-			for (int j = 0; j < 3; j++) {
-				containedVertices.Add (vertices[i + j]);
-				containedIndices.Add(count + MarchingCubes.windingOrder[j]);
-				containedUVs.Add (uvs[i + j]);
+				for (int j = 0; j < 3; j++) {
+					containedVertices [layer].Add (vertices [layer] [i + j]);
+					containedIndices [layer].Add (count + MarchingCubes.windingOrder [j]);
+					containedUVs [layer].Add (uvs [layer] [i + j]);
+				}
+				count += 3;
 			}
-			count += 3;
 		}
+			
+		MeshData[] meshData = GenerateLayeredMeshData (world, startX, endX, startY, endY, startZ, endZ);
 
-		MeshData meshData = GenerateMeshData (world, startX, endX, startY, endY, startZ, endZ);
-		containedVertices.AddRange (meshData.GetVertices ());
-		containedUVs.AddRange (meshData.GetUVs ());
+		for (int layer = 0; layer < layers; layer++) {
+			containedVertices[layer].AddRange (meshData[layer].GetVertices ());
+			containedUVs[layer].AddRange (meshData[layer].GetUVs ());
 
-		int index = containedIndices.Count;
-		for (int i = 0; i < meshData.GetNumVertices(); i += 3) {
-			for (int j = 0; j < 3; ++j) {
-				containedIndices.Add (index + MarchingCubes.windingOrder [j]);
+			int offset = containedIndices[layer].Count;
+			List<int> _indices = meshData [layer].GetIndices ();
+			for (int i = 0; i < meshData[layer].GetNumVertices (); i++) {
+					containedIndices[layer].Add (offset + _indices [i]);
 			}
-			index += 3;
-		}
 
-		vertices = containedVertices.ToArray ();
-		indices = containedIndices.ToArray ();
-		uvs = containedUVs.ToArray();
+			vertices[layer] = containedVertices [layer];
+			indices[layer] = containedIndices[layer];
+			uvs[layer] = containedUVs [layer];
+		}
+	}
+
+	private void UpdateMeshData(World world, int layer, int startX, int endX, int startY, int endY, int startZ, int endZ) {
+		// examine current veritices
+
 	}
 
 	public GameObject ChunkObject {
@@ -112,17 +174,21 @@ public class Chunk {
 		return true;
 	}
 
-	private MeshData GenerateMeshData(World world) {
+	private MeshData[] GenerateLayeredMeshData(World world) {
 		int startX = (int) position.x;
 		int startY = (int) position.y;
 		int startZ = (int) position.z;
 
-		return GenerateMeshData (world, startX, startX + Chunk.CHUNK_X, startY, startY + Chunk.CHUNK_Y, startZ, startZ + Chunk.CHUNK_Z);
+		return GenerateLayeredMeshData (world, startX, startX + Chunk.CHUNK_X, startY, startY + Chunk.CHUNK_Y, startZ, startZ + Chunk.CHUNK_Z);
 	}
 
-	private MeshData GenerateMeshData(World world, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
+	private MeshData[] GenerateLayeredMeshData(World world, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
 
-		MeshData meshData = new MeshData ();
+		float[] isolevels = world.Isolevels;
+		MeshData[] meshData = new MeshData[isolevels.Length];
+		for (int i = 0; i < isolevels.Length; i++) {
+			meshData [i] = new MeshData ();
+		}
 
 		for (int x = minX; x < maxX; x++) {
 			for (int y = minY; y < maxY; y++) {
@@ -132,7 +198,7 @@ public class Chunk {
 					int yLoc = (int) (y * scale);
 					int zLoc = (int) (z * scale);
 
-					MarchingCubes.Polygonize (xLoc, yLoc, zLoc, meshData, world);
+					MarchingCubes.Polygonize (xLoc, yLoc, zLoc, meshData, isolevels, world);
 				}
 			}
 		}
@@ -140,16 +206,4 @@ public class Chunk {
 		return meshData;
 	}
 
-	private Mesh ToMesh() {
-
-		Mesh mesh = new Mesh();
-
-		mesh.vertices = vertices;
-		mesh.triangles = indices;
-		mesh.uv = uvs;
-		mesh.RecalculateNormals ();
-		mesh.RecalculateBounds ();
-
-		return mesh;
-	}
 }

@@ -4,17 +4,27 @@ using System.Collections;
 
 public class TerrainUpdater : NetworkBehaviour {
 
+	public Camera playerCamera;
+	public LayerMask layerMask;
+
 	private World world;
-	private Camera playerCamera;
+
+
 
 	// Use this for initialization
 	void Start () {
+		if (!isLocalPlayer)
+			return;
+
 		world = GameObject.Find ("World").GetComponent<World> ();
-		playerCamera = GetComponent<SimpleSmoothMouseLook> ().cameras [0];
+		layerMask = ~layerMask;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+		if (!isLocalPlayer)
+			return;
+
 		world.UpdateWorld (gameObject.transform.position);
 
 		if (Input.GetMouseButtonDown (0)) {
@@ -22,7 +32,9 @@ public class TerrainUpdater : NetworkBehaviour {
 			Transform transform = playerCamera.transform;
 			Ray ray = new Ray (transform.position, transform.forward); 
 
-			if (Physics.Raycast(ray, out hit)) {
+			Debug.Log ("Shooting ray");
+			if (Physics.Raycast(ray, out hit, 100f, layerMask)) { // , LayerMask.GetMask("Player1")
+				Debug.Log (hit.collider);
 				Vector3 position = hit.point;
 				CmdDeform (position);
 			}
