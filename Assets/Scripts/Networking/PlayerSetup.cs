@@ -3,7 +3,7 @@ using UnityEngine.Networking;
 
 public class PlayerSetup : NetworkBehaviour {
 
-    [SerializeField]
+    [SerializeField] //Disable the components of another player
     Behaviour[] componentsToDisable;
 
     [SerializeField]
@@ -16,7 +16,9 @@ public class PlayerSetup : NetworkBehaviour {
         if(!isLocalPlayer)
         {
             DisableComponents();
-            AssignRemoteLayer();
+            
+            //(temporary)for now, just set all the players in one layer
+            //AssignRemoteLayer();
         }
         else
         {
