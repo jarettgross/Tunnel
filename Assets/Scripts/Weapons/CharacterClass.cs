@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class CharacterClass : MonoBehaviour {
+public class CharacterBaseClass : MonoBehaviour {
 
 	private List<BaseWeapon> playerWeapons;
 

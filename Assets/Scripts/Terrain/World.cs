@@ -133,7 +133,6 @@ public class World : MonoBehaviour {
 				}
 			}
 		}
-
 	}
 
 	private void BuildWalls() {

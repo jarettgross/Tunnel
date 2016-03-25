@@ -20,8 +20,8 @@ public class TerrainController : NetworkBehaviour {
 
 	}
 
-
-	private void DisplayWorld() {
+	[ClientRpc]
+	public void RpcDisplayWorld() {
 		terrainManager = ((GameObject)Instantiate (terrainManagerPrefab)).GetComponent<TerrainManager> ();
 	}
 

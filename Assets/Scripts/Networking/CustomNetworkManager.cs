@@ -18,7 +18,7 @@ public class CustomNetworkManager : NetworkManager {
 		//connections = new Dictionary<NetworkConnection, GameObject> ();
 		players = new List<GameObject> ();
 
-		ServerChangeScene ("loadscreen");
+		ServerChangeScene ("Character Select Menu");
 	}
 
 	override public void OnServerConnect(NetworkConnection conn) {
@@ -44,6 +44,7 @@ public class CustomNetworkManager : NetworkManager {
 
 		//connections.Add (conn, player);
 		players.Add(player);
+		DontDestroyOnLoad (player);
 
 		Debug.Log ("Player " + players.Count + " joined");
 	}
@@ -55,6 +56,15 @@ public class CustomNetworkManager : NetworkManager {
 		foreach (GameObject player in players) {
 			//GameObject player = connections [conn];
 			player.GetComponent<TerrainController> ().RpcDeform (deformation.Position, deformation.GetDeformationType(), deformation.Radius);
+		}
+	}
+
+	public void LoadWorld() {
+		ServerChangeScene ("Deformable Scene");
+
+		foreach (GameObject player in players) {
+			//GameObject player = connections [conn];
+			player.GetComponent<TerrainController> ().RpcDisplayWorld();
 		}
 	}
 }

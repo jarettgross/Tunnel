@@ -48,7 +48,8 @@ public class SimpleSmoothMouseLook : NetworkBehaviour
         }
 
         // Ensure the cursor is always locked when set
-        Screen.lockCursor = lockCursor;
+		Cursor.lockState = CursorLockMode.Locked;
+		Cursor.visible = false;
 
         // Allow the script to clamp based on a desired target value.
         var targetOrientation = Quaternion.Euler(targetDirection);
@@ -99,7 +100,8 @@ public class SimpleSmoothMouseLook : NetworkBehaviour
 
     void OnDestroy()
     {
-        Screen.lockCursor = false;
+		Cursor.lockState = CursorLockMode.None;
+		Cursor.visible = true;
     }
 }
 

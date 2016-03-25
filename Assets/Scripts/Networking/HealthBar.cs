@@ -25,7 +25,8 @@ public class HealthBar : NetworkBehaviour
         
         hasHealth = GetComponent<HasHealth>();
         healthSlider = Instantiate(healthSliderPreFab);
-        healthSlider.transform.parent = transform.parent;
+        //healthSlider.transform.parent = transform.parent;
+		healthSlider.transform.SetParent (transform.parent);
         slider = healthSlider.GetComponentInChildren<Slider>();
     }
 

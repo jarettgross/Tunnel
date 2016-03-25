@@ -1,9 +1,10 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class CharacterSelector : MonoBehaviour {
+public class CharacterSelector : NetworkBehaviour {
 
 	private int listIndex = 0;
 	private int numClasses;
@@ -110,7 +111,8 @@ public class CharacterSelector : MonoBehaviour {
 		}
 	}
 
-	public void PlayGame() {
 
+	public void PlayGame() {
+		GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().LoadWorld ();
 	}
 }
