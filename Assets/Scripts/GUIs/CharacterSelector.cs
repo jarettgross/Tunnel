@@ -114,5 +114,6 @@ public class CharacterSelector : NetworkBehaviour {
 
 	public void PlayGame() {
 		GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().LoadWorld ();
+		//gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady();
 	}
 }

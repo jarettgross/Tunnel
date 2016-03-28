@@ -13,6 +13,9 @@ public class PlayerSetup : NetworkBehaviour {
 
     void Start()
     {
+		if (isServer)
+			return;
+
         if(!isLocalPlayer)
         {
             DisableComponents();

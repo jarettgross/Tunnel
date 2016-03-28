@@ -66,6 +66,8 @@ public class TerrainManager : MonoBehaviour {
 		world = worldObject.GetComponent<World> ();
 		world.Initialize (sizeX, sizeY, sizeZ, noise, isolevel);
 		world.StartWorld ();
+
+		//GameObject.Find("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<TerrainController> ().DisplayWorld();
 	}
 
 	private float CutoffFunc(float x, float y, float z) {
