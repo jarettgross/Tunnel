@@ -8,8 +8,6 @@ public class CustomNetworkManager : NetworkManager {
 	//private Dictionary<NetworkConnection, GameObject> connections;
 	private List<GameObject> players;
 
-	private static short id = 0;
-
 	override public void OnStartServer() {
 		Debug.Log ("Server Starting");
 
@@ -40,10 +38,13 @@ public class CustomNetworkManager : NetworkManager {
 		GameObject player = (GameObject)Instantiate(playerPrefab, new Vector3 (5, 20, 5), Quaternion.identity);
 		player.GetComponent<TerrainController> ().networkManager = this;
 		player.GetComponent<SceneController> ().networkManager = this;
+		player.name = "player";
 		//player.GetComponent<Renderer> ().enabled = false;
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
 
 		//connections.Add (conn, player);
+		RegisterPlayers(player);
+
 		players.Add(player);
 		//DontDestroyOnLoad (player);
 
@@ -67,6 +68,13 @@ public class CustomNetworkManager : NetworkManager {
 		foreach (GameObject player in players) {
 			//GameObject player = connections [conn];
 			player.GetComponent<SceneController> ().RpcLoadWorld();
+		}
+	}
+
+	private void RegisterPlayers(GameObject _player) {
+		foreach (GameObject player in players) {
+			//GameObject player = connections [conn];
+			_player.GetComponent<SceneController> ().RpcRegisterPlayer(player);
 		}
 	}
 }

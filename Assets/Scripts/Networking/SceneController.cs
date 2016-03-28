@@ -56,4 +56,9 @@ public class SceneController : NetworkBehaviour {
 		//gameObject.GetComponent<TerrainController> ().DisplayWorld ();
 	}
 
+	[ClientRpc]
+	public void RpcRegisterPlayer(GameObject otherPlayer) {
+		DontDestroyOnLoad (otherPlayer);
+	}
+
 }
