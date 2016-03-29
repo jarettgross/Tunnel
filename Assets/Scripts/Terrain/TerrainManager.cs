@@ -67,7 +67,7 @@ public class TerrainManager : MonoBehaviour {
 		world.Initialize (sizeX, sizeY, sizeZ, noise, isolevel);
 		world.StartWorld ();
 
-		//GameObject.Find("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<TerrainController> ().DisplayWorld();
+		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<TerrainController> ().DisplayWorld();
 	}
 
 	private float CutoffFunc(float x, float y, float z) {
@@ -75,32 +75,6 @@ public class TerrainManager : MonoBehaviour {
 			return 0;
 		return 1;
 	}
-
-//	public void Deform(Vector3 position) {
-//		//UnityEngine.Debug.Log ("Why the fuck is the server calling this????");
-//
-////		if (!isLocalPlayer)
-////			return;
-//
-////		if (!hasAuthority)
-////			return;
-//
-//		UnityEngine.Debug.Log ("Calling CmdDeform");
-//		CmdDeform (position);
-//	}
-//
-//	[Command]
-//	private void CmdDeform(Vector3 position) {
-//		Deformation deformation = new Deformation(position, Deformation.DeformationType.Cube, 1);
-//		RpcDeform (deformation.Position, deformation.GetDeformationType(), deformation.Radius);
-//	}
-//
-//	[ClientRpc]
-//	public void RpcDeform(Vector3 position, Deformation.DeformationType type, int radius) {
-//		UnityEngine.Debug.Log ("Received deformation");
-//
-//		world.Deform (new Deformation(position, type, radius));
-//	}
 
 	public void Deform(Deformation deformation) {
 		world.Deform (deformation);

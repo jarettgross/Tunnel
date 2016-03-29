@@ -24,7 +24,7 @@ public class CharacterSelector : NetworkBehaviour {
 	private bool isNextButtonClick = false;
 	private bool isPrevButtonClick = false;
 
-	void Start () {
+	public override void OnStartLocalPlayer () {
 		GameObject[] characters = Resources.LoadAll<GameObject> ("CharacterPrefabs");
 		numClasses = characters.Length;
 		container = GameObject.Find ("CharacterContainer").transform;
@@ -113,7 +113,6 @@ public class CharacterSelector : NetworkBehaviour {
 
 
 	public void PlayGame() {
-		GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().LoadWorld ();
-		//gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady();
+		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady ();
 	}
 }

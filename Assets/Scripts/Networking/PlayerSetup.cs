@@ -16,9 +16,11 @@ public class PlayerSetup : NetworkBehaviour {
 		if (isServer)
 			return;
 
+		DisableComponents ();
+
         if(!isLocalPlayer)
         {
-            DisableComponents();
+            //DisableComponents();
             
             //(temporary)for now, just set all the players in one layer
             //AssignRemoteLayer();
@@ -54,6 +56,14 @@ public class PlayerSetup : NetworkBehaviour {
             componentsToDisable[i].enabled = false;
         }
     }
+
+	public void EnableComponents()
+	{
+		for (int i = 0; i < componentsToDisable.Length; i++)
+		{
+			componentsToDisable[i].enabled = true;
+		}
+	}
 
     void OnDisable()
     {

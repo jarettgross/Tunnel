@@ -7,41 +7,37 @@ public class SceneController : NetworkBehaviour {
 
 	public CustomNetworkManager networkManager;
 
+	private string characterSelectionMenueScene = "Character Select Menu";
+	private string worldScene = "Deformable Scene";
+
 	public override void OnStartLocalPlayer() {
 		DontDestroyOnLoad (gameObject);
-
-		LoadWorld ();
-		//StartCoroutine (LoadLevelWait ());
+		LoadCharacterSelectionScreen ();
 	}
 
-//	IEnumerator LoadLevelWait() {
-//		//yield return new WaitForSeconds (5);
-//		//Application.LoadLevel ("Character Select Menu");
-//		LoadWorld();
-//	}
+	/* * * * * * * * * * * * * * * * * 
+	 * Start Character Selection Menu Messages
+	 * * * * * * * * * * * * * * * * */
 
-//	public void RpcLoadCharacterSelectionScreen() {
-//		Application.LoadLevel ("Character Select Menu");
-//	}
+	private void LoadCharacterSelectionScreen() {
+		//Application.LoadLevel (characterSelectionMenueScene);
+		SceneManager.LoadScene (characterSelectionMenueScene);
+	}
 
 	public void CharacterSelectionScreenReady() {
 		CmdCharacterReady ();
 	}
 
-//	private void PrepareCharacter() {
-//		gameObject.AddComponent<HasHealth> ();
-//		gameObject.AddComponent<HealthBar> ();
-//		gameObject.AddComponent<PerformAttack> ();
-//		gameObject.AddComponent<SimpleSmoothMouseLook> ();
-//		gameObject.AddComponent<PlayerController> ();
-//		gameObject.AddComponent<PlayerSetup> ();
-//		gameObject.AddComponent<TerrainController> ();
-//	}
-
 	[Command]
 	private void CmdCharacterReady() {
-		RpcLoadWorld ();
+		//RpcLoadWorld ();
+		networkManager.CharacterSelectionScreenPlayerReady (gameObject);
 	}
+
+
+	/* * * * * * * * * * * * * * * * * 
+	 * Start World Messages
+	 * * * * * * * * * * * * * * * * */
 
 	[ClientRpc]
 	public void RpcLoadWorld() {
@@ -52,8 +48,9 @@ public class SceneController : NetworkBehaviour {
 	}
 
 	private void LoadWorld() {
-		Application.LoadLevel ("Deformable Scene");
-		//gameObject.GetComponent<TerrainController> ().DisplayWorld ();
+		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
+		//Application.LoadLevel (worldScene);
+		SceneManager.LoadScene (worldScene);
 	}
 
 	[ClientRpc]

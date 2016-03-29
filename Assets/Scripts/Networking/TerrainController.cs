@@ -27,8 +27,10 @@ public class TerrainController : NetworkBehaviour {
 	public void DisplayWorld() {
 		
 		GameObject tm = GameObject.Find ("Terrain Manager");
-		if (tm == null)
+		if (tm == null) {
+			Debug.LogError ("Terrain Manager null in TerrainController DisplayWorld()");
 			return;
+		}
 		
 		Debug.Log ("Displaying World");
 		terrainManager = tm.GetComponent<TerrainManager> ();
@@ -43,7 +45,6 @@ public class TerrainController : NetworkBehaviour {
 			return;
 
 		if (!ready) {
-			DisplayWorld ();
 			return;
 		}
 			
