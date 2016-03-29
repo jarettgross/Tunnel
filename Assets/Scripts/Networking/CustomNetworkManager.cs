@@ -5,12 +5,8 @@ using System.Collections.Generic;
 
 public class CustomNetworkManager : NetworkManager {
 
-	public GameObject terrainManager;
-
 	//private Dictionary<NetworkConnection, GameObject> connections;
 	private List<GameObject> players;
-
-	private static short id = 0;
 
 	override public void OnStartServer() {
 		Debug.Log ("Server Starting");
@@ -18,7 +14,9 @@ public class CustomNetworkManager : NetworkManager {
 		//connections = new Dictionary<NetworkConnection, GameObject> ();
 		players = new List<GameObject> ();
 
-		ServerChangeScene ("Character Select Menu");
+		NetworkServer.SetAllClientsNotReady ();
+
+		//ServerChangeScene ("Character Select Menu");
 	}
 
 	override public void OnServerConnect(NetworkConnection conn) {
@@ -39,14 +37,19 @@ public class CustomNetworkManager : NetworkManager {
 
 		GameObject player = (GameObject)Instantiate(playerPrefab, new Vector3 (5, 20, 5), Quaternion.identity);
 		player.GetComponent<TerrainController> ().networkManager = this;
-		player.GetComponent<Renderer> ().enabled = false;
+		player.GetComponent<SceneController> ().networkManager = this;
+		player.name = "player";
+		//player.GetComponent<Renderer> ().enabled = false;
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
 
 		//connections.Add (conn, player);
+		RegisterPlayers(player);
+
 		players.Add(player);
-		DontDestroyOnLoad (player);
+		//DontDestroyOnLoad (player);
 
 		Debug.Log ("Player " + players.Count + " joined");
+		//player.GetComponent<SceneController> ().RpcLoadCharacterSelectionScreen ();
 	}
 
 	public void SendDeformation(Deformation deformation) {
@@ -60,11 +63,18 @@ public class CustomNetworkManager : NetworkManager {
 	}
 
 	public void LoadWorld() {
-		ServerChangeScene ("Deformable Scene");
+		//ServerChangeScene ("Deformable Scene");
 
 		foreach (GameObject player in players) {
 			//GameObject player = connections [conn];
-			player.GetComponent<TerrainController> ().RpcDisplayWorld();
+			player.GetComponent<SceneController> ().RpcLoadWorld();
+		}
+	}
+
+	private void RegisterPlayers(GameObject _player) {
+		foreach (GameObject player in players) {
+			//GameObject player = connections [conn];
+			_player.GetComponent<SceneController> ().RpcRegisterPlayer(player);
 		}
 	}
 }

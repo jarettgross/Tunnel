@@ -7,22 +7,33 @@ public class TerrainController : NetworkBehaviour {
 
 	public Camera playerCamera;
 	public LayerMask layerMask;
-	public GameObject terrainManagerPrefab;
 	public CustomNetworkManager networkManager; // dont initialize
 
 	private TerrainManager terrainManager;
 
+	private bool ready = false;
 
 	public override void OnStartLocalPlayer() {
 		layerMask = ~layerMask;
 		networkManager = gameObject.GetComponent<CustomNetworkManager> ();
-
-
 	}
 
 	[ClientRpc]
 	public void RpcDisplayWorld() {
-		terrainManager = ((GameObject)Instantiate (terrainManagerPrefab)).GetComponent<TerrainManager> ();
+		//terrainManager = ((GameObject)Instantiate (terrainManagerPrefab)).GetComponent<TerrainManager> ();
+		DisplayWorld();
+	}
+
+	public void DisplayWorld() {
+		
+		GameObject tm = GameObject.Find ("Terrain Manager");
+		if (tm == null)
+			return;
+		
+		Debug.Log ("Displaying World");
+		terrainManager = tm.GetComponent<TerrainManager> ();
+		gameObject.transform.position = new Vector3 (5, 20, 5);
+		ready = true;
 	}
 
 
@@ -30,6 +41,12 @@ public class TerrainController : NetworkBehaviour {
 	void Update () {
 		if (!isLocalPlayer)
 			return;
+
+		if (!ready) {
+			DisplayWorld ();
+			return;
+		}
+			
 
 		terrainManager.UpdateWorld (gameObject.transform.position);
 
