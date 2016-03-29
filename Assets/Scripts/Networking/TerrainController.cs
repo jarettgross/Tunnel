@@ -67,9 +67,7 @@ public class TerrainController : NetworkBehaviour {
 
 	[Command]
 	private void CmdDeform(Vector3 position) {
-		Debug.Log ("In Cmd");
 		Deformation deformation = new Deformation(position, Deformation.DeformationType.Cube, 1);
-//		RpcDeform (deformation.Position, deformation.GetDeformationType(), deformation.Radius);
 		networkManager.SendDeformation(deformation);
 	}
 		
@@ -78,7 +76,6 @@ public class TerrainController : NetworkBehaviour {
 		if (!isLocalPlayer)
 			return;
 
-		Debug.Log ("Received deformation");
 		terrainManager.Deform (new Deformation(position, type, radius));
 	}
 }

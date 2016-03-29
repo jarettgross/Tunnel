@@ -184,8 +184,10 @@ public class PerformAttack : NetworkBehaviour
     }
 
     [ClientRpc]
-    void RpcDoShootEffect()
-    {
+    void RpcDoShootEffect() {
+		if (!isLocalPlayer)
+			return;
+
         weaponManager.GetCurrentGraphics().muzzleFlash.Play();  //active the muzzleFlash
     }
 }

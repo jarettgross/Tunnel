@@ -32,7 +32,7 @@ public class CustomNetworkManager : NetworkManager {
 
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
 
-		// Alert new players of existing players
+		// Alert new player of existing players
 		RegisterPlayers(player);
 
 		players.Add(player);
@@ -60,6 +60,7 @@ public class CustomNetworkManager : NetworkManager {
 	private void RegisterPlayers(GameObject _player) {
 		foreach (GameObject player in players) {
 			_player.GetComponent<SceneController> ().RpcRegisterPlayer(player);
+			player.GetComponent<SceneController> ().RpcRegisterPlayer(_player);
 		}
 	}
 
@@ -102,8 +103,6 @@ public class CustomNetworkManager : NetworkManager {
 	 * Sends a deformation to all connected clients
 	 */
 	public void SendDeformation(Deformation deformation) {
-		Debug.Log ("Sending deformation from server");
-
 		foreach (GameObject player in players) {
 			player.GetComponent<TerrainController> ().RpcDeform (deformation.Position, deformation.GetDeformationType(), deformation.Radius);
 		}
