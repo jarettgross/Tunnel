@@ -157,4 +157,13 @@ public class PlayerController : NetworkBehaviour
         }
         body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
     }
+
+	private void SetMine() {
+		float playerDistToGround = gameObject.GetComponent<Collider> ().bounds.extents.y;
+		if (Physics.Raycast (gameObject.transform.position, -Vector3.up, playerDistToGround + 0.1f)) {
+			Vector3 minePos = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y - (playerDistToGround - 0.1f), gameObject.transform.position.z);
+			GameObject mineObj = (GameObject)Instantiate (Resources.Load("MineWeapon"), minePos, gameObject.transform.rotation);
+			mineObj.GetComponent<Mine> ().owner = gameObject;
+		}
+	}
 }
