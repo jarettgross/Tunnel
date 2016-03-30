@@ -186,19 +186,6 @@ public class FPSWalkerEnhanced: MonoBehaviour {
 				lineRenderer.enabled = true;
 			}
 		} 
-
-		if (Input.GetKeyDown(KeyCode.E) && mineCounter > 0) {
-			RaycastHit hit;
-			Ray ray = new Ray (gameObject.transform.position, -gameObject.transform.up); 
-			if (Physics.Raycast(ray, out hit)) {
-				Vector3 minePos = hit.point;
-				GameObject mine = Instantiate (Resources.Load ("MineResource", typeof(GameObject))) as GameObject;
-				Mine mineObj = mine.GetComponent<Mine> ();
-				mineObj.setOwner (gameObject);
-				mine.transform.position = minePos;
-				mineCounter--;
-			}
-		}
 	}
 
 	// Store point that we're in contact with for use in FixedUpdate if needed
