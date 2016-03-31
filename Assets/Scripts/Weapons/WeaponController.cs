@@ -131,11 +131,11 @@ public class WeaponController : NetworkBehaviour {
 		currentWeapon.Equip();
     }
 
-
+	/*
+	 * Switch weapons based on middle mouse scroll value
+	 */ 
 	private void SwitchWeapon(float delta) {
 		int newWeaponSlot = currentWeaponSlot;
-
-		Debug.Log("Current Slot: " + currentWeaponSlot);
 
 		if (delta > 0) {
 			newWeaponSlot = currentWeaponSlot + 1;
@@ -147,10 +147,7 @@ public class WeaponController : NetworkBehaviour {
 				newWeaponSlot = weapons.Count - 1;
 		}
 
-		Debug.Log("New Weapon Slot: " + newWeaponSlot);
-
 		if (newWeaponSlot != currentWeaponSlot) {
-			Debug.Log("Equipping weapon slot: " + newWeaponSlot);
 			EquipWeapon(newWeaponSlot);
 		}
 	}

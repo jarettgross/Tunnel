@@ -72,10 +72,14 @@ public class WeaponBase : NetworkBehaviour {
 		lastFired = Time.time;
 	}
 
+
+	/* * * * * * * * * * * * * * * *
+	 * 	Equipping and Unequipping Messages
+	 * * * * * * * * * * * * * * * */ 
+
 	[Command]
 	private void CmdEquip() {
 		modelInstance = (GameObject) Instantiate (weaponModel);
-
 		NetworkServer.SpawnWithClientAuthority(modelInstance, connectionToClient);
 
 		RpcEquip(modelInstance);
@@ -83,9 +87,6 @@ public class WeaponBase : NetworkBehaviour {
 
 	[Command]
 	private void CmdUnequip() {
-		if (modelInstance == null)
-			Debug.Log("Model instance null");
-
 		NetworkServer.Destroy(modelInstance);
 
 		RpcUnequip();
@@ -101,10 +102,7 @@ public class WeaponBase : NetworkBehaviour {
 
 	[ClientRpc]
 	private void RpcUnequip() {
-//		if (modelInstance == null)
-//			Debug.Log("Model instance null");
-//
-//		Destroy (modelInstance);
+		modelInstance = null;
 	}
 
 
