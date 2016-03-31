@@ -50,13 +50,13 @@ public class WeaponController : NetworkBehaviour {
 
 //		// Temporary
 		WeaponBase starterWeapon = ((GameObject)Instantiate(tempStarterWeapon, Vector3.zero, Quaternion.identity)).GetComponent<WeaponBase>();
-//		WeaponBase secondaryWeapon = ((GameObject)Instantiate(tempSecondaryWeapon, Vector3.zero, Quaternion.identity)).GetComponent<WeaponBase>();
+		WeaponBase secondaryWeapon = ((GameObject)Instantiate(tempSecondaryWeapon, Vector3.zero, Quaternion.identity)).GetComponent<WeaponBase>();
 //
 //		// Add weapons to weapon list
 		AddWeapon(starterWeapon);
-//		AddWeapon(secondaryWeapon);
-//
-//        // Equip the default weapon
+		AddWeapon(secondaryWeapon);
+
+        // Equip the default weapon
         EquipWeapon(0);
     }
 
@@ -153,6 +153,7 @@ public class WeaponController : NetworkBehaviour {
 		Debug.Log("New Weapon Slot: " + newWeaponSlot);
 
 		if (newWeaponSlot != currentWeaponSlot) {
+			Debug.Log("Equipping weapon slot: " + newWeaponSlot);
 			EquipWeapon(newWeaponSlot);
 		}
 	}

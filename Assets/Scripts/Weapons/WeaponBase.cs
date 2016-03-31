@@ -62,6 +62,7 @@ public class WeaponBase : MonoBehaviour {
 	 * On unequipping the weapon, destroy the weapon model.
 	 */ 
 	public void Unequip() {
+		Debug.Log("Unequipping Weapon");
 		Destroy (modelInstance);
 	}
 		
