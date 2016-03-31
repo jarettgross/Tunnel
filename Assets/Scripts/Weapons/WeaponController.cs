@@ -52,18 +52,8 @@ public class WeaponController : NetworkBehaviour {
 	/*
 	 * Assign the starting weapons of the player
 	 */ 
-	public void AssignStartingWeapons() {
-		
-		// Temporary
-		WeaponBase starterWeapon = ((GameObject)Instantiate(tempStarterWeapon, Vector3.zero, Quaternion.identity)).GetComponent<WeaponBase>();
-		WeaponBase secondaryWeapon = ((GameObject)Instantiate(tempSecondaryWeapon, Vector3.zero, Quaternion.identity)).GetComponent<WeaponBase>();
-		
-		// Add weapons to weapon list
-		AddWeapon(starterWeapon);
-		AddWeapon(secondaryWeapon);
-
-		// Equip the default weapon
-		EquipWeapon(0);
+	public void Initialize() {
+		CmdInitialize();
 	}
 
     /*
@@ -111,9 +101,9 @@ public class WeaponController : NetworkBehaviour {
 			}
 		}
 
+		// Handle weapon switching with middle mouse scroll
 		float delta = 0;
 		if ((delta = Input.GetAxis("Mouse ScrollWheel")) != 0) {
-			Debug.Log("Delta: " + delta);
 			SwitchWeapon(delta);
 		}
 	}
@@ -165,6 +155,38 @@ public class WeaponController : NetworkBehaviour {
 		}
 	}
 
+	[Command]
+	private void CmdInitialize() {
+		// Temporary
+		GameObject starterWeapon = (GameObject)Instantiate(tempStarterWeapon, Vector3.zero, Quaternion.identity);
+		GameObject secondaryWeapon = (GameObject)Instantiate(tempSecondaryWeapon, Vector3.zero, Quaternion.identity);
+
+		NetworkServer.SpawnWithClientAuthority(starterWeapon, connectionToClient);
+		NetworkServer.SpawnWithClientAuthority(secondaryWeapon, connectionToClient);
+
+		RpcInitialize(starterWeapon, secondaryWeapon);
+	}
+
+	[ClientRpc]
+	private void RpcInitialize(GameObject _starterWeapon, GameObject _secondaryWeapon) {
+
+		WeaponBase starterWeapon = _starterWeapon.GetComponent<WeaponBase>();
+		WeaponBase secondaryWeapon = _secondaryWeapon.GetComponent<WeaponBase>();
+
+		starterWeapon.gameObject.name = "Pistol";
+		secondaryWeapon.gameObject.name = "Uzi";
+
+		// Add weapons to weapon list
+		AddWeapon(starterWeapon);
+		AddWeapon(secondaryWeapon);
+
+		if (!isLocalPlayer)
+			return;
+
+		// Equip the default weapon
+		EquipWeapon(1);
+	}
+
 	/*
 	 * Perform client side shoot call to server
 	 */ 
@@ -197,8 +219,6 @@ public class WeaponController : NetworkBehaviour {
 			if (health != null) {
 				CmdHandleShot(collider);
 			}
-
-			Debug.Log(hitPosition);
 
 			// Send deformation to server
 			GetComponent<TerrainController>().CmdDeform(hitPosition);

@@ -57,12 +57,15 @@ public class SceneController : NetworkBehaviour {
 		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
 	}
 		
+	/*
+	 * Initialize player components for game
+	 */ 
 	public void ReadyPlayer() {
 		if (!isLocalPlayer)
 			return;
 
 		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
-		gameObject.GetComponent<WeaponController>().AssignStartingWeapons();
+		gameObject.GetComponent<WeaponController>().Initialize();
 	}
 
 	[ClientRpc]

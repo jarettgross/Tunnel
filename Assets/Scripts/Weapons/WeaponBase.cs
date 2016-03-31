@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 
-public class WeaponBase : MonoBehaviour {
+[RequireComponent(typeof(NetworkIdentity))]
+public class WeaponBase : NetworkBehaviour {
 
 	public GameObject bulletHole;
 	public GameObject bloodHole;
@@ -53,21 +55,14 @@ public class WeaponBase : MonoBehaviour {
 	 * On equipping the weapon, instantiate the weapon model.
 	 */
 	public void Equip() {
-		Debug.Log("Equipping new weapon");
-		modelInstance = (GameObject) Instantiate (weaponModel);
-		//modelInstance.transform.SetParent(parent);
-		modelInstance.transform.SetParent(gameObject.transform, false);
+		CmdEquip();
 	}
 
 	/*
 	 * On unequipping the weapon, destroy the weapon model.
 	 */ 
 	public void Unequip() {
-		if (modelInstance == null)
-			Debug.Log("Model instance null");
-
-		Debug.Log("Unequipping weapon");
-		Destroy (modelInstance);
+		CmdUnequip();
 	}
 		
 	/*
@@ -75,6 +70,41 @@ public class WeaponBase : MonoBehaviour {
 	 */ 
 	public void ResetFireTime() {
 		lastFired = Time.time;
+	}
+
+	[Command]
+	private void CmdEquip() {
+		modelInstance = (GameObject) Instantiate (weaponModel);
+
+		NetworkServer.SpawnWithClientAuthority(modelInstance, connectionToClient);
+
+		RpcEquip(modelInstance);
+	}
+
+	[Command]
+	private void CmdUnequip() {
+		if (modelInstance == null)
+			Debug.Log("Model instance null");
+
+		NetworkServer.Destroy(modelInstance);
+
+		RpcUnequip();
+	}
+
+	[ClientRpc]
+	private void RpcEquip(GameObject model) {
+		modelInstance = model;
+
+		modelInstance.transform.rotation = weaponModel.transform.rotation;
+		modelInstance.transform.SetParent(gameObject.transform, false);
+	}
+
+	[ClientRpc]
+	private void RpcUnequip() {
+//		if (modelInstance == null)
+//			Debug.Log("Model instance null");
+//
+//		Destroy (modelInstance);
 	}
 
 
