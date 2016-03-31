@@ -20,7 +20,6 @@ public class SceneController : NetworkBehaviour {
 	 * * * * * * * * * * * * * * * * */
 
 	private void LoadCharacterSelectionScreen() {
-		//Application.LoadLevel (characterSelectionMenueScene);
 		SceneManager.LoadScene (characterSelectionMenueScene);
 	}
 
@@ -56,6 +55,14 @@ public class SceneController : NetworkBehaviour {
 			return;
 
 		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
+	}
+		
+	public void ReadyPlayer() {
+		if (!isLocalPlayer)
+			return;
+
+		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
+		gameObject.GetComponent<WeaponController>().AssignStartingWeapons();
 	}
 
 	[ClientRpc]

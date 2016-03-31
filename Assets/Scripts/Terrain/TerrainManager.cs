@@ -42,6 +42,7 @@ public class TerrainManager : NetworkBehaviour {
 
 	// Use this for initialization
 	void Start() {
+		UnityEngine.Debug.Log("Start of TerrainManager");
 
 		if (!isClient)
 			return;
@@ -75,6 +76,7 @@ public class TerrainManager : NetworkBehaviour {
 
 		
 		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager>().client.connection.playerControllers[0].gameObject.GetComponent<TerrainController>().DisplayWorld(gameObject);
+		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager>().client.connection.playerControllers[0].gameObject.GetComponent<SceneController>().ReadyPlayer();
 	}
 
 	private float CutoffFunc(float x, float y, float z) {

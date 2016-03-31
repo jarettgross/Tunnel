@@ -52,17 +52,21 @@ public class WeaponBase : MonoBehaviour {
 	/*
 	 * On equipping the weapon, instantiate the weapon model.
 	 */
-	public void Equip(Transform parent) {
-		Debug.Log("Equipping Weapon");
-		modelInstance = (GameObject) Instantiate (weaponModel, transform.position, transform.rotation);
-		modelInstance.transform.SetParent(parent);
+	public void Equip() {
+		Debug.Log("Equipping new weapon");
+		modelInstance = (GameObject) Instantiate (weaponModel);
+		//modelInstance.transform.SetParent(parent);
+		modelInstance.transform.SetParent(gameObject.transform, false);
 	}
 
 	/*
 	 * On unequipping the weapon, destroy the weapon model.
 	 */ 
 	public void Unequip() {
-		Debug.Log("Unequipping Weapon");
+		if (modelInstance == null)
+			Debug.Log("Model instance null");
+
+		Debug.Log("Unequipping weapon");
 		Destroy (modelInstance);
 	}
 		

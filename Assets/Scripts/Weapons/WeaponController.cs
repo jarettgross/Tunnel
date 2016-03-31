@@ -38,7 +38,7 @@ public class WeaponController : NetworkBehaviour {
 	private WeaponBase currentWeapon;
 
 	/*
-	 * Initialize player's starting weapon
+	 * Initialize weapon fields
 	 */ 
 	void Start() {
 		weapons = new List<WeaponBase>();
@@ -47,18 +47,24 @@ public class WeaponController : NetworkBehaviour {
 
 		// Flip bits in selfLayer to exclude local player
 		selfLayer = ~selfLayer;
+    }
 
-//		// Temporary
+	/*
+	 * Assign the starting weapons of the player
+	 */ 
+	public void AssignStartingWeapons() {
+		
+		// Temporary
 		WeaponBase starterWeapon = ((GameObject)Instantiate(tempStarterWeapon, Vector3.zero, Quaternion.identity)).GetComponent<WeaponBase>();
 		WeaponBase secondaryWeapon = ((GameObject)Instantiate(tempSecondaryWeapon, Vector3.zero, Quaternion.identity)).GetComponent<WeaponBase>();
-//
-//		// Add weapons to weapon list
+		
+		// Add weapons to weapon list
 		AddWeapon(starterWeapon);
 		AddWeapon(secondaryWeapon);
 
-        // Equip the default weapon
-        EquipWeapon(0);
-    }
+		// Equip the default weapon
+		EquipWeapon(0);
+	}
 
     /*
      * Returns the player's active weapon
@@ -123,15 +129,16 @@ public class WeaponController : NetworkBehaviour {
 		}
 
 		// Unequip old weapon
-		if (currentWeapon != null)
+		if (currentWeapon != null) {
 			currentWeapon.Unequip();
+		}
 
 		// Update current weapon
 		currentWeapon = weapons[weaponSlot];
 		currentWeaponSlot = weaponSlot;
 
 		// Equip new weapon
-		currentWeapon.Equip(weaponHolder.transform);
+		currentWeapon.Equip();
     }
 
 
