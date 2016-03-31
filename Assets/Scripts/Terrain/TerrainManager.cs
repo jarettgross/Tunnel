@@ -8,7 +8,7 @@ using CoherentNoise;
 using CoherentNoise.Generation;
 using CoherentNoise.Generation.Fractal;
 
-public class TerrainManager : MonoBehaviour {
+public class TerrainManager : NetworkBehaviour {
 
 	public int seed;
 	public float scale;
@@ -41,7 +41,12 @@ public class TerrainManager : MonoBehaviour {
 	private NetworkConnection conn;
 
 	// Use this for initialization
-	void Start () {
+	void Start() {
+
+		if (!isClient)
+			return;
+
+		DontDestroyOnLoad(this);
 
 		UnityEngine.Debug.Log ("Starting Terrain Creation");
 
@@ -67,7 +72,9 @@ public class TerrainManager : MonoBehaviour {
 		world.Initialize (sizeX, sizeY, sizeZ, noise, isolevel);
 		world.StartWorld ();
 
-		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<TerrainController> ().DisplayWorld();
+
+		
+		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager>().client.connection.playerControllers[0].gameObject.GetComponent<TerrainController>().DisplayWorld(gameObject);
 	}
 
 	private float CutoffFunc(float x, float y, float z) {

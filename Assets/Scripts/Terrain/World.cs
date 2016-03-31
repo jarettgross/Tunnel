@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 
 using System;
 using System.Threading;
@@ -7,7 +8,10 @@ using System.Collections.Generic;
 using CoherentNoise;
 using CoherentNoise.Generation;
 
-public class World : MonoBehaviour {
+public class World : NetworkBehaviour {
+
+	public GameObject wallPrefab;
+	public GameObject chunkPrefab;
 
 	public const int CHUNK_FILL_RANGE_HORIZ = 20;
 	public const int CHUNK_FILL_RANGE_VERT = 5;
@@ -136,31 +140,34 @@ public class World : MonoBehaviour {
 	}
 
 	private void BuildWalls() {
-		GameObject wallPrefab = GameObject.Find ("Constants").gameObject.GetComponent<Constants> ().wallObject;
-
-		GameObject floor = (GameObject)Instantiate (wallPrefab);
+		GameObject floor = Instantiate (wallPrefab);
 		floor.transform.localScale = new Vector3 (sizeX, 1, sizeZ);
 		floor.transform.position = new Vector3 (sizeX * Chunk.CHUNK_X / 2, 0, sizeZ * Chunk.CHUNK_Z / 2);
+		DontDestroyOnLoad(floor);
 
-		GameObject wallMinX = (GameObject)Instantiate (wallPrefab);
+		GameObject wallMinX = Instantiate (wallPrefab);
 		wallMinX.transform.localScale = new Vector3 (sizeX, 1, sizeY);
 		wallMinX.transform.rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
 		wallMinX.transform.position = new Vector3 (sizeX * Chunk.CHUNK_X / 2, sizeY * Chunk.CHUNK_Y / 2, 0);
+		DontDestroyOnLoad(wallMinX);
 
-		GameObject wallMaxX = (GameObject)Instantiate (wallPrefab);
+		GameObject wallMaxX = Instantiate (wallPrefab);
 		wallMaxX.transform.localScale = new Vector3 (sizeX, 1, sizeY);
 		wallMaxX.transform.rotation = Quaternion.Euler (new Vector3 (-90, 0, 0));
 		wallMaxX.transform.position = new Vector3 (sizeX * Chunk.CHUNK_X / 2, sizeY * Chunk.CHUNK_Y / 2, sizeZ * Chunk.CHUNK_Z);
+		DontDestroyOnLoad(wallMaxX);
 
-		GameObject wallMinZ = (GameObject)Instantiate (wallPrefab);
+		GameObject wallMinZ = Instantiate (wallPrefab);
 		wallMinZ.transform.localScale = new Vector3 (sizeY, 1, sizeZ);
 		wallMinZ.transform.rotation = Quaternion.Euler (new Vector3 (0, 0, -90));
 		wallMinZ.transform.position = new Vector3 (0, sizeY * Chunk.CHUNK_Y / 2, sizeZ * Chunk.CHUNK_Z / 2);
+		DontDestroyOnLoad(wallMinZ);
 
-		GameObject wallMaxZ = (GameObject)Instantiate (wallPrefab);
+		GameObject wallMaxZ = Instantiate (wallPrefab);
 		wallMaxZ.transform.localScale = new Vector3 (sizeY, 1, sizeZ);
 		wallMaxZ.transform.rotation = Quaternion.Euler (new Vector3 (0, 0, 90));
 		wallMaxZ.transform.position = new Vector3 (sizeX * Chunk.CHUNK_X, sizeY * Chunk.CHUNK_Y / 2, sizeZ * Chunk.CHUNK_Z / 2);
+		DontDestroyOnLoad(wallMaxZ);
 	}
 
 	public void AddTerrain() {
@@ -174,7 +181,7 @@ public class World : MonoBehaviour {
 	}
 
 	private void CreateChunk(int x, int y, int z) {
-		GameObject chunkObject = Instantiate (GameObject.Find("Constants").gameObject.GetComponent<Constants> ().terrainObject);
+		GameObject chunkObject = Instantiate (chunkPrefab);
 		chunkObject.name = "chunk";
 
 		Chunk chunk = new Chunk (new Vector3 (x * Chunk.CHUNK_X, y * Chunk.CHUNK_Y, z * Chunk.CHUNK_Z), scale, chunkObject, isolevels.Length);

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: a986005af2dc74b4dbc5b7b3a721b84b
+timeCreated: 1459409602
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - bulletHole: {fileID: 193724, guid: b91edbeababd54ac2bd9b069856ad135, type: 2}
+  - bloodHole: {fileID: 112958, guid: 0fbff8b3ae1ae4d5783ae0f6fdf15278, type: 2}
+  - debrisPrefab: {fileID: 113510, guid: 587585cabf54c4d45867412bb6c4ad0e, type: 2}
+  - sound: {instanceID: 0}
+  - weaponModel: {fileID: 162706, guid: 4b1aacf0711d343c9a7fa627502c5152, type: 2}
+  - muzzleFlash: {fileID: 19878774, guid: fc2de7b2097a99d4d90dcdb515cc01f5, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

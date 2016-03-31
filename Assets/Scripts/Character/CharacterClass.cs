@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public class CharacterClass : MonoBehaviour {
 
-	private List<BaseWeapon> playerWeapons;
+	private List<WeaponBase> playerWeapons;
 
 	private float healthPoints;
 	[SerializeField]

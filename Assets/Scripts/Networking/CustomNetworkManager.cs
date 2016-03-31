@@ -7,6 +7,8 @@ public class CustomNetworkManager : NetworkManager {
 
 	public int requiredPlayers;
 
+	public GameObject terrainManagerPrefab;
+
 	//private Dictionary<NetworkConnection, GameObject> connections;
 	private List<GameObject> players;
 
@@ -96,6 +98,13 @@ public class CustomNetworkManager : NetworkManager {
 	public void LoadWorld() {
 		foreach (GameObject player in players) {
 			player.GetComponent<SceneController> ().RpcLoadWorld();
+		}
+
+		GameObject terrainManager = (GameObject)Instantiate(terrainManagerPrefab, Vector3.zero, Quaternion.identity);
+		NetworkServer.Spawn(terrainManager);
+
+		foreach (GameObject player in players) {
+			player.GetComponent<SceneController>().RpcReadyPlayer();
 		}
 	}
 

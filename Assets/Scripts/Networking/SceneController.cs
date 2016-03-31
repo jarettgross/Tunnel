@@ -30,7 +30,6 @@ public class SceneController : NetworkBehaviour {
 
 	[Command]
 	private void CmdCharacterReady() {
-		//RpcLoadWorld ();
 		networkManager.CharacterSelectionScreenPlayerReady (gameObject);
 	}
 
@@ -48,9 +47,15 @@ public class SceneController : NetworkBehaviour {
 	}
 
 	private void LoadWorld() {
-		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
-		//Application.LoadLevel (worldScene);
 		SceneManager.LoadScene (worldScene);
+	}
+
+	[ClientRpc]
+	public void RpcReadyPlayer() {
+		if (!isLocalPlayer)
+			return;
+
+		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
 	}
 
 	[ClientRpc]

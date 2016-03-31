@@ -21,12 +21,11 @@ public class TerrainController : NetworkBehaviour {
 	[ClientRpc]
 	public void RpcDisplayWorld() {
 		//terrainManager = ((GameObject)Instantiate (terrainManagerPrefab)).GetComponent<TerrainManager> ();
-		DisplayWorld();
+		//DisplayWorld();
 	}
 
-	public void DisplayWorld() {
+	public void DisplayWorld(GameObject tm) {
 		
-		GameObject tm = GameObject.Find ("Terrain Manager");
 		if (tm == null) {
 			Debug.LogError ("Terrain Manager null in TerrainController DisplayWorld()");
 			return;
@@ -41,6 +40,7 @@ public class TerrainController : NetworkBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+
 		if (!isLocalPlayer)
 			return;
 
@@ -49,24 +49,25 @@ public class TerrainController : NetworkBehaviour {
 		}
 			
 
+
 		terrainManager.UpdateWorld (gameObject.transform.position);
 
-		if (Input.GetMouseButtonDown (0)) {
-			RaycastHit hit;
-			Transform transform = playerCamera.transform;
-			Ray ray = new Ray (transform.position, transform.forward); 
-
-			if (Physics.Raycast(ray, out hit, 100f, layerMask)) {
-				Debug.Log (hit.collider);
-				Vector3 position = hit.point;
-				CmdDeform (position);
-				//terrainManager.Deform (position);			
-			}
-		}
+//		if (Input.GetMouseButtonDown (0)) {
+//			RaycastHit hit;
+//			Transform transform = playerCamera.transform;
+//			Ray ray = new Ray (transform.position, transform.forward); 
+//
+//			if (Physics.Raycast(ray, out hit, 100f, layerMask)) {
+//				Debug.Log (hit.collider);
+//				Vector3 position = hit.point;
+//				CmdDeform (position);
+//				//terrainManager.Deform (position);			
+//			}
+//		}
 	}
 
 	[Command]
-	private void CmdDeform(Vector3 position) {
+	public void CmdDeform(Vector3 position) {
 		Deformation deformation = new Deformation(position, Deformation.DeformationType.Cube, 1);
 		networkManager.SendDeformation(deformation);
 	}
