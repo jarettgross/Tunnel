@@ -24,6 +24,8 @@ public class HasHealth : NetworkBehaviour {
         {
             Die();
         }
+
+		Debug.Log("Took damage. Health now: " + currentHealth);
     }
 
     void Die()

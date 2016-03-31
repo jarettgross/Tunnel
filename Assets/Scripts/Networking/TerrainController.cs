@@ -18,14 +18,8 @@ public class TerrainController : NetworkBehaviour {
 		networkManager = gameObject.GetComponent<CustomNetworkManager> ();
 	}
 
-	[ClientRpc]
-	public void RpcDisplayWorld() {
-		//terrainManager = ((GameObject)Instantiate (terrainManagerPrefab)).GetComponent<TerrainManager> ();
-		//DisplayWorld();
-	}
-
-	public void DisplayWorld(GameObject tm) {
-		
+	public void Initialize() {
+		GameObject tm = GameObject.Find("Terrain Manager(Clone)");
 		if (tm == null) {
 			Debug.LogError ("Terrain Manager null in TerrainController DisplayWorld()");
 			return;
@@ -47,23 +41,8 @@ public class TerrainController : NetworkBehaviour {
 		if (!ready) {
 			return;
 		}
-			
-
 
 		terrainManager.UpdateWorld (gameObject.transform.position);
-
-//		if (Input.GetMouseButtonDown (0)) {
-//			RaycastHit hit;
-//			Transform transform = playerCamera.transform;
-//			Ray ray = new Ray (transform.position, transform.forward); 
-//
-//			if (Physics.Raycast(ray, out hit, 100f, layerMask)) {
-//				Debug.Log (hit.collider);
-//				Vector3 position = hit.point;
-//				CmdDeform (position);
-//				//terrainManager.Deform (position);			
-//			}
-//		}
 	}
 
 	[Command]

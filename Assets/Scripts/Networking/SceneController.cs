@@ -7,12 +7,23 @@ public class SceneController : NetworkBehaviour {
 
 	public CustomNetworkManager networkManager;
 
-	private string characterSelectionMenueScene = "Character Select Menu";
-	private string worldScene = "Deformable Scene";
+	private const int characterSelectionMenueSceneId = 1;
+	private const int worldSceneId = 2;
 
 	public override void OnStartLocalPlayer() {
 		DontDestroyOnLoad (gameObject);
 		LoadCharacterSelectionScreen ();
+	}
+
+	void OnLevelWasLoaded(int level) {
+		switch (level) {
+		case characterSelectionMenueSceneId:
+			break;
+
+		case worldSceneId:
+			ReadyPlayer();
+			break;
+		}
 	}
 
 	/* * * * * * * * * * * * * * * * * 
@@ -20,7 +31,7 @@ public class SceneController : NetworkBehaviour {
 	 * * * * * * * * * * * * * * * * */
 
 	private void LoadCharacterSelectionScreen() {
-		SceneManager.LoadScene (characterSelectionMenueScene);
+		SceneManager.LoadScene (characterSelectionMenueSceneId);
 	}
 
 	public void CharacterSelectionScreenReady() {
@@ -46,7 +57,7 @@ public class SceneController : NetworkBehaviour {
 	}
 
 	private void LoadWorld() {
-		SceneManager.LoadScene (worldScene);
+		SceneManager.LoadScene (worldSceneId);
 	}
 
 	[ClientRpc]
@@ -65,7 +76,9 @@ public class SceneController : NetworkBehaviour {
 			return;
 
 		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
+		gameObject.GetComponent<TerrainController>().Initialize();
 		gameObject.GetComponent<WeaponController>().Initialize();
+		gameObject.GetComponent<HealthBar>().Initialize();
 	}
 
 	[ClientRpc]

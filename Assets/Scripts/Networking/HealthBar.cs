@@ -16,35 +16,29 @@ public class HealthBar : NetworkBehaviour
     private const float BAR_X_POS = -450f;
     private const float BAR_Y_POS = -50f;
 
-    void Start()
-    {
-        if (!isLocalPlayer)
-        {
-            return;
-        }
-        
-        hasHealth = GetComponent<HasHealth>();
-        healthSlider = Instantiate(healthSliderPreFab);
-        //healthSlider.transform.parent = transform.parent;
-		healthSlider.transform.SetParent (transform.parent);
-        slider = healthSlider.GetComponentInChildren<Slider>();
-    }
+	public void Initialize() {
+		if (!isLocalPlayer) {
+			return;
+		}
 
-    void Update()
-    {
-        if (!isLocalPlayer)
-        {
+		hasHealth = GetComponent<HasHealth>();
+		healthSlider = Instantiate(healthSliderPreFab);
+		healthSlider.transform.SetParent (transform.parent);
+		slider = healthSlider.GetComponentInChildren<Slider>();
+	}
+
+    void Update() {
+        if (!isLocalPlayer) {
             return;
         }
         slider.value = hasHealth.currentHealth / hasHealth.hitPoints;
     }
 
-    void OnDestroy()
-    {
-        if (!isLocalPlayer)
-        {
+    void OnDestroy() {
+        if (!isLocalPlayer) {
             return;
         }
+
         Destroy(healthSlider);
     }
 }

@@ -214,7 +214,7 @@ public class WeaponController : NetworkBehaviour {
 
 			HasHealth health = collider.GetComponent<HasHealth>();
 			if (health != null) {
-				CmdHandleShot(collider);
+				CmdHandleShot(collider, GetCurrentWeapon().gameObject);
 			}
 
 			// Send deformation to server
@@ -229,18 +229,19 @@ public class WeaponController : NetworkBehaviour {
 	 * Perform server side shot calculation
 	 */ 
 	[Command]
-	private void CmdHandleShot(GameObject target) {
+	private void CmdHandleShot(GameObject target, GameObject weapon) {
 
-		Debug.Log("Shooting");
+		Debug.Log("Shooting " + target.name);
+		WeaponBase weaponBase = weapon.GetComponent<WeaponBase>();
 
 		// Apply damage to player
-		target.GetComponent<HasHealth>().ReceiveDamage(GetCurrentWeapon().Damage);
+		target.GetComponent<HasHealth>().ReceiveDamage(weaponBase.Damage);
 
 		// Play muzzle flash
 		RpcMuzzleFlash();
 
 		//Play shooting sound
-		GetComponent<AudioSource>().PlayOneShot(GetCurrentWeapon().sound);
+		GetComponent<AudioSource>().PlayOneShot(weaponBase.sound);
 	}
 
 	/*
