@@ -133,14 +133,14 @@ public class PerformAttack : NetworkBehaviour
     {
         //Show muzzle flash
         RpcDoShootEffect();
-
+        
         //(temporary)Play the shooting sound
         GetComponent<AudioSource>().PlayOneShot(pistol_sound);
 
         //use ray to simulate shooting
         Ray ray = new Ray(cam.transform.position + cam.transform.forward * 0.5f, cam.transform.forward);
 
-        //do sth. when hit an object
+        //do sth. when hit an object      
         if (Physics.Raycast(ray, out hitInfo, currentWeapon.range, mask))
         {
             Vector3 hitPoint = hitInfo.point;
