@@ -73,9 +73,6 @@ public class TerrainManager : NetworkBehaviour {
 		world.Initialize (sizeX, sizeY, sizeZ, noise, isolevel);
 		world.StartWorld ();
 
-		if (!isLocalPlayer)
-			return;
-
 		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager>().client.connection.playerControllers[0].gameObject.GetComponent<SceneController>().ReadyPlayer();
 	}
 
