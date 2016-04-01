@@ -166,4 +166,9 @@ public class PlayerController : NetworkBehaviour
 			mineObj.GetComponent<Mine> ().owner = gameObject;
 		}
 	}
+
+	private void SetJetpack() {
+		GameObject jetpackObj = (GameObject)Instantiate (Resources.Load ("Jetpack"), gameObject.transform.position, gameObject.transform.rotation);
+		jetpackObj.GetComponent<Jetpack> ().owner = gameObject;
+	}
 }

@@ -6,6 +6,7 @@ public class Mine : MonoBehaviour {
 	public GameObject owner; //player who owns this mine; can't explode on owner
 	private bool isFalling;
 	private bool ignoreCollision; //ignore the collision when mine is first instantiated
+	public float damage;
 
 	//Triggered by a sphere collider, slightly larger than the mine
 	//Used for a player entering the mine's radius
