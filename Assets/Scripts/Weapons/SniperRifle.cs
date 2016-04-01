@@ -8,15 +8,17 @@ public class SniperRifle : WeaponBase {
 	public Camera scopeCamera;
 	private Rect rectCrosshair;
 
-	private Camera playerCamera;
 	private float mainCameraFOV;
 	private const float SCOPE_FOV = 15;
 
-	private bool useScope; //using scope camera or regular camera
+	private bool useScope = false; //using scope camera or regular camera
 
 	void Start () {
-		playerCamera = Camera.main;
-		mainCameraFOV = playerCamera.fieldOfView;
+		base.Start();
+
+		mainCameraFOV = scopeCamera.fieldOfView;
+		Debug.Log("Main camera FOV: " + mainCameraFOV);
+
 		rectCrosshair = new Rect (0, 0, Screen.width, Screen.height);
 		float aspectRatio = Screen.width / (float)Screen.height;
 		Debug.Log (aspectRatio);
@@ -30,18 +32,28 @@ public class SniperRifle : WeaponBase {
 	}
 
 	void OnGUI() {
+		if (!isLocalPlayer)
+			return;
+
 		if (useScope) {
 			//Set coordinates to place texture at (middle of screen)
 			rectCrosshair.x = (Screen.width - rectCrosshair.width) / 2;
 			rectCrosshair.y = (Screen.height - rectCrosshair.height) / 2;
-			playerCamera.fieldOfView = SCOPE_FOV;
+			Debug.Log("Current FOV: " + scopeCamera.fieldOfView);
+			scopeCamera.fieldOfView = SCOPE_FOV;
+			Debug.Log("New FOV: " + scopeCamera.fieldOfView);
+
+			//scopeCamera.fieldOfView = SCOPE_FOV;
 			GUI.DrawTexture (rectCrosshair, scopeCrosshair);
 		} else {
-			playerCamera.fieldOfView = mainCameraFOV;
+			scopeCamera.fieldOfView = mainCameraFOV;
 		}
 	}
 
 	void Update () {
+		if (!isLocalPlayer)
+			return;
+
 		if (Input.GetMouseButtonDown(1)) {
 			useScope = !useScope;
 		}

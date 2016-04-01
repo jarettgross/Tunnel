@@ -107,7 +107,7 @@ public class WeaponBase : NetworkBehaviour {
 
 		modelInstance.transform.rotation = weaponModel.transform.rotation;
 		modelInstance.transform.SetParent(gameObject.transform, false);
-		muzzleFlash.transform.position = modelInstance.transform.position;
+		//muzzleFlash.transform.position = modelInstance.transform.position;
 	}
 
 	[ClientRpc]
