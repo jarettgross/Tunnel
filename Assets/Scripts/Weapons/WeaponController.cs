@@ -127,6 +127,9 @@ public class WeaponController : NetworkBehaviour {
 		currentWeapon = weapons[weaponSlot];
 		currentWeaponSlot = weaponSlot;
 
+		if (!isLocalPlayer)
+			return;
+
 		// Equip new weapon
 		currentWeapon.Equip();
     }
@@ -177,9 +180,6 @@ public class WeaponController : NetworkBehaviour {
 		AddWeapon(starterWeapon);
 		AddWeapon(secondaryWeapon);
 
-		if (!isLocalPlayer)
-			return;
-
 		// Equip the default weapon
 		EquipWeapon(1);
 	}
@@ -221,6 +221,9 @@ public class WeaponController : NetworkBehaviour {
 			GetComponent<TerrainController>().CmdDeform(hitPosition);
 		}
 
+		// Play weapon muzzle flash
+		GetCurrentWeapon().PlayMuzzleFlash();
+
 		// Reset last fire time
 		GetCurrentWeapon().ResetFireTime();
 	}
@@ -237,18 +240,8 @@ public class WeaponController : NetworkBehaviour {
 		// Apply damage to player
 		target.GetComponent<HasHealth>().ReceiveDamage(weaponBase.Damage);
 
-		// Play muzzle flash
-		RpcMuzzleFlash();
-
 		//Play shooting sound
 		GetComponent<AudioSource>().PlayOneShot(weaponBase.sound);
 	}
-
-	/*
-	 * Displays weapon muzzle flash
-	 */ 
-	[ClientRpc]
-	private void RpcMuzzleFlash() {
-		GetCurrentWeapon().MuzzleFlash.Play();
-	}
+		
 }

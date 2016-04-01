@@ -9,6 +9,7 @@ public class WeaponBase : NetworkBehaviour {
 	public GameObject bloodHole;
 	public GameObject debrisPrefab;
 	public AudioClip sound;
+	public ParticleSystem muzzleFlashPrefab;
 
 	[SerializeField] // Damage dealt by weapon
 	protected float damage = 10f;
@@ -34,8 +35,8 @@ public class WeaponBase : NetworkBehaviour {
 	[SerializeField] // Weapon model
 	protected GameObject weaponModel;
 
-	[SerializeField] // Weapon muzzle flash
-	protected ParticleSystem muzzleFlash;
+	// Weapon muzzle flash instance
+	private ParticleSystem muzzleFlash;
 
 	// Time of last shot
 	private float lastFired;
@@ -49,6 +50,7 @@ public class WeaponBase : NetworkBehaviour {
 	public void Start() {
 		lastFired = 0;
 		modelInstance = null;
+		//muzzleFlash = ((GameObject)Instantiate(muzzleFlashPrefab.gameObject, Vector3.zero, Quaternion.identity)).GetComponent<ParticleSystem>();
 	}
 
 	/*
@@ -70,6 +72,13 @@ public class WeaponBase : NetworkBehaviour {
 	 */ 
 	public void ResetFireTime() {
 		lastFired = Time.time;
+	}
+
+	/*
+	 * Plays this weapon's muzzle flash
+	 */ 
+	public void PlayMuzzleFlash() {
+		CmdPlayMuzzleFlash();
 	}
 
 
@@ -98,13 +107,23 @@ public class WeaponBase : NetworkBehaviour {
 
 		modelInstance.transform.rotation = weaponModel.transform.rotation;
 		modelInstance.transform.SetParent(gameObject.transform, false);
+		muzzleFlash.transform.position = modelInstance.transform.position;
 	}
 
 	[ClientRpc]
 	private void RpcUnequip() {
 		modelInstance = null;
 	}
+		
+	[Command]
+	private void CmdPlayMuzzleFlash() {
+		RpcPlayMuzzleFlash();
+	}
 
+	[ClientRpc]
+	private void RpcPlayMuzzleFlash() {
+		//muzzleFlash.Play();
+	}
 
 	/* * * * * * * * * * * * * * * *
 	 * 		Getters and Setters
