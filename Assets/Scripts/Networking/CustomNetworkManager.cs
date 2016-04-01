@@ -99,13 +99,14 @@ public class CustomNetworkManager : NetworkManager {
 		foreach (GameObject player in players) {
 			player.GetComponent<SceneController> ().RpcLoadWorld();
 		}
+	}
 
+	/*
+	 * Spawns terrain on the clients
+	 */ 
+	public void SpawnTerrain() {
 		GameObject terrainManager = (GameObject)Instantiate(terrainManagerPrefab, Vector3.zero, Quaternion.identity);
 		NetworkServer.Spawn(terrainManager);
-
-		foreach (GameObject player in players) {
-			player.GetComponent<SceneController>().RpcReadyPlayer();
-		}
 	}
 
 	/*

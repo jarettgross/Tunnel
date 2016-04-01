@@ -21,7 +21,7 @@ public class SceneController : NetworkBehaviour {
 			break;
 
 		case worldSceneId:
-			ReadyPlayer();
+			CmdWorldLoaded();
 			break;
 		}
 	}
@@ -59,14 +59,6 @@ public class SceneController : NetworkBehaviour {
 	private void LoadWorld() {
 		SceneManager.LoadScene (worldSceneId);
 	}
-
-	[ClientRpc]
-	public void RpcReadyPlayer() {
-		if (!isLocalPlayer)
-			return;
-
-		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
-	}
 		
 	/*
 	 * Initialize player components for game
@@ -84,6 +76,11 @@ public class SceneController : NetworkBehaviour {
 	[ClientRpc]
 	public void RpcRegisterPlayer(GameObject otherPlayer) {
 		DontDestroyOnLoad (otherPlayer);
+	}
+
+	[Command]
+	public void CmdWorldLoaded() {
+		networkManager.SpawnTerrain();
 	}
 
 }

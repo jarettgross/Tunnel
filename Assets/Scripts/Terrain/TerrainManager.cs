@@ -72,6 +72,11 @@ public class TerrainManager : NetworkBehaviour {
 		world = worldObject.GetComponent<World> ();
 		world.Initialize (sizeX, sizeY, sizeZ, noise, isolevel);
 		world.StartWorld ();
+
+		if (!isLocalPlayer)
+			return;
+
+		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager>().client.connection.playerControllers[0].gameObject.GetComponent<SceneController>().ReadyPlayer();
 	}
 
 	private float CutoffFunc(float x, float y, float z) {
