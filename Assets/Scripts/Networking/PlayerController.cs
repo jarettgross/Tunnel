@@ -6,8 +6,8 @@ using UnityStandardAssets.CrossPlatformInput;
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private bool m_IsWalking;
-    [SerializeField] private float m_WalkSpeed;
-    [SerializeField] private float m_RunSpeed;
+    private float m_WalkSpeed;
+    private float m_RunSpeed;
     [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
     [SerializeField] private float m_JumpSpeed;
     [SerializeField] private float m_StickToGroundForce;
@@ -32,6 +32,12 @@ public class PlayerController : NetworkBehaviour
         m_NextStep = m_StepCycle/2f;
         m_Jumping = false;
     }
+
+	public void Initialize() {
+		CharacterClass character = GetComponent<CharacterClass>();
+		m_WalkSpeed = character.WalkSpeed;
+		m_RunSpeed = character.RunSpeed;
+	}
 
     // Update is called once per frame
     private void Update()

@@ -46,8 +46,8 @@ public class TerrainController : NetworkBehaviour {
 	}
 
 	[Command]
-	public void CmdDeform(Vector3 position) {
-		Deformation deformation = new Deformation(position, Deformation.DeformationType.Cube, 1);
+	public void CmdDeform(Vector3 position, int radius) {
+		Deformation deformation = new Deformation(position, Deformation.DeformationType.Cube, radius);
 		networkManager.SendDeformation(deformation);
 	}
 		

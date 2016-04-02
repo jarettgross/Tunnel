@@ -31,7 +31,7 @@ public class HealthBar : NetworkBehaviour
         if (!isLocalPlayer) {
             return;
         }
-        slider.value = hasHealth.currentHealth / hasHealth.hitPoints;
+		slider.value = hasHealth.HealthRatio();
     }
 
     void OnDestroy() {

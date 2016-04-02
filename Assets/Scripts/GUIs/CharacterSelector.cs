@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.UI;
 
-public class CharacterSelector : NetworkBehaviour {
+public class CharacterSelector : MonoBehaviour {
 
 	private int listIndex = 0;
 	private int numClasses;
@@ -20,12 +20,13 @@ public class CharacterSelector : NetworkBehaviour {
 	private Quaternion initialRotation;
 	private Quaternion finalRotation;
 	private int rotationDirection;
+	private GameObject[] characters;
 
 	private bool isNextButtonClick = false;
 	private bool isPrevButtonClick = false;
 
-	public override void OnStartLocalPlayer () {
-		GameObject[] characters = Resources.LoadAll<GameObject> ("CharacterPrefabs");
+	void Start () {
+		characters = Resources.LoadAll<GameObject> ("CharacterPrefabs");
 		numClasses = characters.Length;
 		container = GameObject.Find ("CharacterContainer").transform;
 
@@ -113,6 +114,7 @@ public class CharacterSelector : NetworkBehaviour {
 
 
 	public void PlayGame() {
-		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady ();
+		GameObject currentClass = characters[listIndex];
+		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady(currentClass);
 	}
 }

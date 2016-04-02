@@ -37,6 +37,9 @@ public class WeaponController : NetworkBehaviour {
 	// Currently active weapon
 	private WeaponBase currentWeapon;
 
+	// Character class
+	private CharacterClass characterClass;
+
 	/*
 	 * Initialize weapon fields
 	 */ 
@@ -53,7 +56,9 @@ public class WeaponController : NetworkBehaviour {
 	 * Assign the starting weapons of the player
 	 */ 
 	public void Initialize() {
-		CmdInitialize();
+		characterClass = GetComponent<CharacterClass>();
+
+		CmdInitialize(characterClass.DefautWeapon.gameObject, characterClass.ClassWeapon1.gameObject, characterClass.ClassWeapon2.gameObject);
 	}
 
     /*
@@ -156,32 +161,37 @@ public class WeaponController : NetworkBehaviour {
 	}
 
 	[Command]
-	private void CmdInitialize() {
+	private void CmdInitialize(GameObject _defaultWeapon, GameObject _classWeapon1, GameObject _classWeapon2) {
+
 		// Temporary
-		GameObject starterWeapon = (GameObject)Instantiate(tempStarterWeapon, Vector3.zero, Quaternion.identity);
-		GameObject secondaryWeapon = (GameObject)Instantiate(tempSecondaryWeapon, Vector3.zero, Quaternion.identity);
+		GameObject defaultWeapon = (GameObject)Instantiate(tempStarterWeapon, Vector3.zero, Quaternion.identity);
+		GameObject classWeapon1 = (GameObject)Instantiate(tempSecondaryWeapon, Vector3.zero, Quaternion.identity);
+		//GameObject classWeapon2 = (GameObject)Instantiate(_classWeapon2, Vector3.zero, Quaternion.identity);
 
-		NetworkServer.SpawnWithClientAuthority(starterWeapon, connectionToClient);
-		NetworkServer.SpawnWithClientAuthority(secondaryWeapon, connectionToClient);
+		NetworkServer.SpawnWithClientAuthority(defaultWeapon, connectionToClient);
+		NetworkServer.SpawnWithClientAuthority(classWeapon1, connectionToClient);
+		//NetworkServer.SpawnWithClientAuthority(classWeapon2, connectionToClient);
 
-		RpcInitialize(starterWeapon, secondaryWeapon);
+		RpcInitialize(defaultWeapon, classWeapon1);
 	}
 
 	[ClientRpc]
-	private void RpcInitialize(GameObject _starterWeapon, GameObject _secondaryWeapon) {
+	private void RpcInitialize(GameObject _defaultWeapon, GameObject _classWeapon1) {
 
-		WeaponBase starterWeapon = _starterWeapon.GetComponent<WeaponBase>();
-		WeaponBase secondaryWeapon = _secondaryWeapon.GetComponent<WeaponBase>();
+		WeaponBase defaultWeapon = _defaultWeapon.GetComponent<WeaponBase>();
+		WeaponBase classWeapon1 = _classWeapon1.GetComponent<WeaponBase>();
+		//WeaponBase classWeapon2 = _classWeapon2.GetComponent<WeaponBase>();
 
-		starterWeapon.gameObject.name = "Pistol";
-		secondaryWeapon.gameObject.name = "Uzi";
+//		defaultWeapon.gameObject.name = "Pistol";
+//		starterWeapon.gameObject.name = "Uzi";
 
 		// Add weapons to weapon list
-		AddWeapon(starterWeapon);
-		AddWeapon(secondaryWeapon);
+		AddWeapon(defaultWeapon);
+		AddWeapon(classWeapon1);
+		//AddWeapon(classWeapon2);
 
 		// Equip the default weapon
-		EquipWeapon(1);
+		EquipWeapon(0);
 	}
 
 	/*
@@ -218,7 +228,7 @@ public class WeaponController : NetworkBehaviour {
 			}
 
 			// Send deformation to server
-			GetComponent<TerrainController>().CmdDeform(hitPosition);
+			GetComponent<TerrainController>().CmdDeform(hitPosition, GetCurrentWeapon().DeformationRadius);
 		}
 
 		// Play weapon muzzle flash

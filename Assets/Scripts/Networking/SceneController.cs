@@ -10,6 +10,8 @@ public class SceneController : NetworkBehaviour {
 	private const int characterSelectionMenueSceneId = 1;
 	private const int worldSceneId = 2;
 
+	private CharacterClass characterClass;
+
 	public override void OnStartLocalPlayer() {
 		DontDestroyOnLoad (gameObject);
 		LoadCharacterSelectionScreen ();
@@ -34,7 +36,8 @@ public class SceneController : NetworkBehaviour {
 		SceneManager.LoadScene (characterSelectionMenueSceneId);
 	}
 
-	public void CharacterSelectionScreenReady() {
+	public void CharacterSelectionScreenReady(GameObject _characterClass) {
+		characterClass = _characterClass.GetComponent<CharacterClass>();
 		CmdCharacterReady ();
 	}
 
@@ -67,10 +70,14 @@ public class SceneController : NetworkBehaviour {
 		if (!isLocalPlayer)
 			return;
 
-		gameObject.GetComponent<PlayerSetup> ().EnableComponents ();
+		CharacterClass cc = gameObject.AddComponent<CharacterClass>();
+		cc.Initialize(characterClass);
+
+		gameObject.GetComponent<PlayerSetup>().EnableComponents ();
 		gameObject.GetComponent<TerrainController>().Initialize();
 		gameObject.GetComponent<WeaponController>().Initialize();
 		gameObject.GetComponent<HealthBar>().Initialize();
+		gameObject.GetComponent<PlayerController>().Initialize();
 	}
 
 	[ClientRpc]

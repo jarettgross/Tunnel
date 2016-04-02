@@ -4,37 +4,34 @@ using System.Collections.Generic;
 
 public class CharacterClass : MonoBehaviour {
 
-	private List<WeaponBase> playerWeapons;
-
-	private float healthPoints;
+	// Default pistol
 	[SerializeField]
-	private float walkSpeed;
+	protected WeaponBase defaultWeapon;
+
+	[SerializeField] // dont set this
+	protected WeaponBase classWeapon1;
+
+	[SerializeField] // dont set this
+	protected WeaponBase classWeapon2;
+
 	[SerializeField]
-	private float runSpeed;
+	protected float healthPoints;
 
-	private bool isWalking;
+	[SerializeField]
+	protected float walkSpeed;
 
-	[SerializeField] [Range(0f, 1f)] 
-	private float m_RunstepLenghten;
-	[SerializeField] 
-	private float m_JumpSpeed;
-	[SerializeField] 
-	private float m_StickToGroundForce;
-	[SerializeField] 
-	private float m_GravityMultiplier;
-	[SerializeField] 
-	private float m_StepInterval;
+	[SerializeField]
+	protected float runSpeed;
 
-	private bool m_Jump;
-	private float m_YRotation;
-	private Vector2 m_Input;
-	private Vector3 m_MoveDir = Vector3.zero;
-	private CharacterController m_CharacterController;
-	private CollisionFlags m_CollisionFlags;
-	private bool m_PreviouslyGrounded;
-	private float m_StepCycle;
-	private float m_NextStep;
-	private bool m_Jumping;
+
+	public void Initialize(CharacterClass other) {
+		defaultWeapon = other.defaultWeapon;
+		classWeapon1 = other.classWeapon1;
+		classWeapon2 = other.classWeapon2;
+		healthPoints = other.healthPoints;
+		walkSpeed = other.walkSpeed;
+		runSpeed = other.runSpeed;
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -44,5 +41,41 @@ public class CharacterClass : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	
+	}
+
+	public WeaponBase DefautWeapon {
+		get {
+			return defaultWeapon;
+		}
+	}
+
+	public WeaponBase ClassWeapon1 {
+		get { 
+			return classWeapon1;
+		}
+	}
+
+	public WeaponBase ClassWeapon2 {
+		get {
+			return classWeapon2;
+		}
+	}
+
+	public float HealthPoints {
+		get { 
+			return healthPoints;
+		}
+	}
+
+	public float WalkSpeed {
+		get { 
+			return walkSpeed;
+		}
+	}
+
+	public float RunSpeed {
+		get { 
+			return runSpeed;
+		}
 	}
 }

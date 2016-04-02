@@ -32,6 +32,9 @@ public class WeaponBase : NetworkBehaviour {
 	[SerializeField] // Delay between shots
 	protected float cooldown = 0.5f;
 
+	[SerializeField]
+	protected int deformationRadius = 2;
+
 	[SerializeField] // Weapon model
 	protected GameObject weaponModel;
 
@@ -186,6 +189,12 @@ public class WeaponBase : NetworkBehaviour {
 	public float Cooldown {
 		get {
 			return this.cooldown;
+		}
+	}
+
+	public int DeformationRadius {
+		get { 
+			return this.deformationRadius;
 		}
 	}
 

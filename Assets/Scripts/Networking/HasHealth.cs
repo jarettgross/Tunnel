@@ -2,21 +2,21 @@
 using UnityEngine.Networking;
 
 public class HasHealth : NetworkBehaviour {
-    [SerializeField]
-    public float hitPoints = 100f;
+
+    private float hitPoints;
 
     [SyncVar]
-    public float currentHealth;
+    private float currentHealth;
 
-    void Awake()
-    {
-        SetDefaults();
-    }
+	void Awake() {
+		SetDefaults();
+	}
 
-    void SetDefaults()
-    {
-        currentHealth = hitPoints;
-    }
+	void SetDefaults() {
+		hitPoints = 100;
+		currentHealth = hitPoints;
+	}
+
     public void ReceiveDamage(float amt)
     {   
         currentHealth -= amt;
@@ -27,6 +27,10 @@ public class HasHealth : NetworkBehaviour {
 
 		Debug.Log("Took damage. Health now: " + currentHealth);
     }
+
+	public float HealthRatio() {
+		return currentHealth / hitPoints;
+	}
 
     void Die()
     {
