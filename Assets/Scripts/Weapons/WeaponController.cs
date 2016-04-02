@@ -2,7 +2,7 @@
 using UnityEngine.Networking;
 using System.Collections.Generic;
 
-[RequireComponent(typeof(AudioSource))]
+[RequireComponent(typeof(SoundController))]
 public class WeaponController : NetworkBehaviour {
 
 	// Temporary starting weapon
@@ -41,6 +41,9 @@ public class WeaponController : NetworkBehaviour {
 	// Character class
 	private CharacterClass characterClass;
 
+    // Sound Controller
+    private SoundController m_SoundController;
+
 	/*
 	 * Initialize weapon fields
 	 */ 
@@ -51,6 +54,8 @@ public class WeaponController : NetworkBehaviour {
 
 		// Flip bits in selfLayer to exclude local player
 		selfLayer = ~selfLayer;
+
+        m_SoundController = GetComponent<SoundController>();
     }
 
 	/*
@@ -235,7 +240,7 @@ public class WeaponController : NetworkBehaviour {
         //Play shooting sound
         //FIXME network the sounds
         WeaponBase weaponBase = GetCurrentWeapon().gameObject.GetComponent<WeaponBase>();
-        GetComponent<AudioSource>().PlayOneShot(weaponBase.sound);
+        m_SoundController.PlayClip(weaponBase.sound);
 
         // Play weapon muzzle flash
         GetCurrentWeapon().PlayMuzzleFlash();
