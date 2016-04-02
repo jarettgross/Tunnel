@@ -17,22 +17,15 @@ public class SoundController : NetworkBehaviour
     void Start()
     {
         m_AudioSource = GetComponent<AudioSource>();
-        if (isServer)
-        {
-            toPlay = 0;
-            clipIndex = -1;
-        }
+        toPlay = 1;
+        clipIndex = -1;
         hasPlayed = toPlay;
     }
 
-    public void PlayClip(AudioClip clip)
+    [Command]
+    public void CmdPlayClip(AudioClip clip)
     {
-        if (!isLocalPlayer)
-        {
-            return;
-        }
-        //FIXME inefficient
-        for (int i=0; i<clips.Length; i++)
+        for (int i = 0; i < clips.Length; i++)
         {
             if (clips[i].Equals(clip))
             {
@@ -46,7 +39,7 @@ public class SoundController : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("toPlay: " + toPlay);
+        Debug.Log("ToPlay: " + toPlay);
         if (toPlay != hasPlayed)
         {
             AudioClip clip = clips[clipIndex];

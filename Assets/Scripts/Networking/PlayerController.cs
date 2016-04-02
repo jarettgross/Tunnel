@@ -52,34 +52,24 @@ public class PlayerController : NetworkBehaviour
     {
         if (!isLocalPlayer)
         {
-            if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
-            {
-                PlayLandingSound();
-            }
-            // FIXME networked jump sound
-            else if (m_PreviouslyGrounded && !m_CharacterController.isGrounded && m_MoveDir.y > 0)
-            {
-                PlayJumpSound();
-            }
+            return;
         }
-        else
-        {
-            // the jump state needs to read here to make sure it is not missed
-            if (!m_Jump)
-            {
-                m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
-            }
 
-            if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
-            {
-                PlayLandingSound();
-                m_MoveDir.y = 0f;
-                m_Jumping = false;
-            }
-            if (!m_CharacterController.isGrounded && !m_Jumping && m_PreviouslyGrounded)
-            {
-                m_MoveDir.y = 0f;
-            }
+        // the jump state needs to read here to make sure it is not missed
+        if (!m_Jump)
+        {
+            m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
+        }
+
+        if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
+        {
+            PlayLandingSound();
+            m_MoveDir.y = 0f;
+            m_Jumping = false;
+        }
+        if (!m_CharacterController.isGrounded && !m_Jumping && m_PreviouslyGrounded)
+        {
+            m_MoveDir.y = 0f;
         }
 
         m_PreviouslyGrounded = m_CharacterController.isGrounded;
@@ -87,7 +77,7 @@ public class PlayerController : NetworkBehaviour
 
     private void PlayLandingSound()
     {
-        m_SoundController.PlayClip(m_LandSound);
+        m_SoundController.CmdPlayClip(m_LandSound);
         m_NextStep = m_StepCycle + .5f;
     }
 
@@ -95,8 +85,6 @@ public class PlayerController : NetworkBehaviour
     {
         if (!isLocalPlayer)
         {
-            //FIXME network the walking/running state
-            ProgressStepCycle(m_WalkSpeed);
             return;
         }
 
@@ -138,7 +126,7 @@ public class PlayerController : NetworkBehaviour
 
     private void PlayJumpSound()
     {
-        m_SoundController.PlayClip(m_JumpSound);
+        m_SoundController.CmdPlayClip(m_JumpSound);
     }
 
     private void ProgressStepCycle(float speed)
@@ -169,7 +157,7 @@ public class PlayerController : NetworkBehaviour
         // excluding sound at index 0
         int n = Random.Range(1, m_FootstepSounds.Length);
         AudioClip stepSound = m_FootstepSounds[n];
-        m_SoundController.PlayClip(stepSound);
+        m_SoundController.CmdPlayClip(stepSound);
         // move picked sound to index 0 so it's not picked next time
         m_FootstepSounds[n] = m_FootstepSounds[0];
         m_FootstepSounds[0] = stepSound;
