@@ -2,6 +2,7 @@
 using UnityEngine.Networking;
 using System.Collections.Generic;
 
+[RequireComponent(typeof(AudioSource))]
 public class WeaponController : NetworkBehaviour {
 
 	// Temporary starting weapon
@@ -231,8 +232,13 @@ public class WeaponController : NetworkBehaviour {
 			GetComponent<TerrainController>().CmdDeform(hitPosition, GetCurrentWeapon().DeformationRadius);
 		}
 
-		// Play weapon muzzle flash
-		GetCurrentWeapon().PlayMuzzleFlash();
+        //Play shooting sound
+        //FIXME network the sounds
+        WeaponBase weaponBase = GetCurrentWeapon().gameObject.GetComponent<WeaponBase>();
+        GetComponent<AudioSource>().PlayOneShot(weaponBase.sound);
+
+        // Play weapon muzzle flash
+        GetCurrentWeapon().PlayMuzzleFlash();
 
 		// Reset last fire time
 		GetCurrentWeapon().ResetFireTime();
@@ -249,9 +255,6 @@ public class WeaponController : NetworkBehaviour {
 
 		// Apply damage to player
 		target.GetComponent<HasHealth>().ReceiveDamage(weaponBase.Damage);
-
-		//Play shooting sound
-		GetComponent<AudioSource>().PlayOneShot(weaponBase.sound);
 	}
 		
 }

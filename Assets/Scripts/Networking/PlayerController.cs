@@ -1,20 +1,25 @@
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityStandardAssets.CrossPlatformInput;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof (CharacterController))]
+[RequireComponent(typeof(AudioSource))]
 public class PlayerController : NetworkBehaviour
 {
     [SerializeField] private bool m_IsWalking;
-    private float m_WalkSpeed;
-    private float m_RunSpeed;
+    [SerializeField] private float m_WalkSpeed;
+    [SerializeField] private float m_RunSpeed;
     [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
     [SerializeField] private float m_JumpSpeed;
     [SerializeField] private float m_StickToGroundForce;
     [SerializeField] private float m_GravityMultiplier;
     [SerializeField] private float m_StepInterval;
+    [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
+    [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
+    [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
+
     private bool m_Jump;
-    private float m_YRotation;
     private Vector2 m_Input;
     private Vector3 m_MoveDir = Vector3.zero;
     private CharacterController m_CharacterController;
@@ -23,6 +28,7 @@ public class PlayerController : NetworkBehaviour
     private float m_StepCycle;
     private float m_NextStep;
     private bool m_Jumping;
+    private AudioSource m_AudioSource;
 
     // Use this for initialization
     private void Start()
@@ -31,6 +37,7 @@ public class PlayerController : NetworkBehaviour
         m_StepCycle = 0f;
         m_NextStep = m_StepCycle/2f;
         m_Jumping = false;
+        m_AudioSource = GetComponent<AudioSource>();
     }
 
 	public void Initialize() {
@@ -39,37 +46,58 @@ public class PlayerController : NetworkBehaviour
 		m_RunSpeed = character.RunSpeed;
 	}
 
+	
     // Update is called once per frame
     private void Update()
     {
         if (!isLocalPlayer)
         {
-            return;
+            if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
+            {
+                PlayLandingSound();
+            }
+            // FIXME networked jump sound
+            else if (m_PreviouslyGrounded && !m_CharacterController.isGrounded && m_MoveDir.y > 0)
+            {
+                PlayJumpSound();
+            }
         }
+        else
+        {
+            // the jump state needs to read here to make sure it is not missed
+            if (!m_Jump)
+            {
+                m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
+            }
 
-        // the jump state needs to read here to make sure it is not missed
-        if (!m_Jump)
-        {
-            m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
-        }
-
-        if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
-        {
-            m_MoveDir.y = 0f;
-            m_Jumping = false;
-        }
-        if (!m_CharacterController.isGrounded && !m_Jumping && m_PreviouslyGrounded)
-        {
-            m_MoveDir.y = 0f;
+            if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
+            {
+                PlayLandingSound();
+                m_MoveDir.y = 0f;
+                m_Jumping = false;
+            }
+            if (!m_CharacterController.isGrounded && !m_Jumping && m_PreviouslyGrounded)
+            {
+                m_MoveDir.y = 0f;
+            }
         }
 
         m_PreviouslyGrounded = m_CharacterController.isGrounded;
+    }
+
+    private void PlayLandingSound()
+    {
+        m_AudioSource.clip = m_LandSound;
+        m_AudioSource.Play();
+        m_NextStep = m_StepCycle + .5f;
     }
 
     private void FixedUpdate()
     {
         if (!isLocalPlayer)
         {
+            //FIXME network the walking/running state
+            ProgressStepCycle(m_WalkSpeed);
             return;
         }
 
@@ -95,6 +123,7 @@ public class PlayerController : NetworkBehaviour
             if (m_Jump)
             {
                 m_MoveDir.y = m_JumpSpeed;
+                PlayJumpSound();
                 m_Jump = false;
                 m_Jumping = true;
             }
@@ -106,6 +135,12 @@ public class PlayerController : NetworkBehaviour
         m_CollisionFlags = m_CharacterController.Move(m_MoveDir*Time.fixedDeltaTime);
 
         ProgressStepCycle(speed);
+    }
+
+    private void PlayJumpSound()
+    {
+        m_AudioSource.clip = m_JumpSound;
+        m_AudioSource.Play();
     }
 
     private void ProgressStepCycle(float speed)
@@ -122,6 +157,24 @@ public class PlayerController : NetworkBehaviour
         }
 
         m_NextStep = m_StepCycle + m_StepInterval;
+
+        PlayFootStepAudio();
+    }
+
+    private void PlayFootStepAudio()
+    {
+        if (!m_CharacterController.isGrounded)
+        {
+            return;
+        }
+        // pick & play a random footstep sound from the array,
+        // excluding sound at index 0
+        int n = Random.Range(1, m_FootstepSounds.Length);
+        m_AudioSource.clip = m_FootstepSounds[n];
+        m_AudioSource.PlayOneShot(m_AudioSource.clip);
+        // move picked sound to index 0 so it's not picked next time
+        m_FootstepSounds[n] = m_FootstepSounds[0];
+        m_FootstepSounds[0] = m_AudioSource.clip;
     }
 
     private void GetInput(out float speed)
