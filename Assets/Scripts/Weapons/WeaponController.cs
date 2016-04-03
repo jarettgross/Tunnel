@@ -240,7 +240,7 @@ public class WeaponController : NetworkBehaviour {
         //Play shooting sound
         //FIXME network the sounds
         WeaponBase weaponBase = GetCurrentWeapon().gameObject.GetComponent<WeaponBase>();
-        m_SoundController.CmdPlayClip(weaponBase.sound);
+        m_SoundController.PlayClip(weaponBase.sound);
 
         // Play weapon muzzle flash
         GetCurrentWeapon().PlayMuzzleFlash();

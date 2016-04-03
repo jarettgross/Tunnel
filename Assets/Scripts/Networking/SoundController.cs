@@ -2,51 +2,46 @@
 using System.Collections;
 using UnityEngine.Networking;
 
-[RequireComponent(typeof(AudioSource))]
 public class SoundController : NetworkBehaviour
 {
     public AudioClip[] clips;
-    private AudioSource m_AudioSource;
 
-    private int hasPlayed;
-
-    [SyncVar] private int toPlay;
-    [SyncVar] private int clipIndex;
+    private AudioSource[] audioSources;
 
     // Use this for initialization
     void Start()
     {
-        m_AudioSource = GetComponent<AudioSource>();
-        toPlay = 1;
-        clipIndex = -1;
-        hasPlayed = toPlay;
+        audioSources = new AudioSource[clips.Length];
+        for (int i=0; i<clips.Length; i++)
+        {
+            audioSources[i] = transform.gameObject.AddComponent<AudioSource>();
+            audioSources[i].spatialBlend = 1;
+            audioSources[i].clip = clips[i];
+        }
     }
 
-    [Command]
-    public void CmdPlayClip(AudioClip clip)
+    [ClientRpc]
+    private void RpcPlayClip(string clipName)
     {
         for (int i = 0; i < clips.Length; i++)
         {
-            if (clips[i].Equals(clip))
+            if (clips[i].name.Equals(clipName))
             {
-                clipIndex = i;
-                toPlay++;
+                //Debug.Log("Playing Clip: " + clipName);
+                audioSources[i].Play();
                 return;
             }
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    [Command]
+    public void CmdPlayClip(string clipName)
     {
-        Debug.Log("ToPlay: " + toPlay);
-        if (toPlay != hasPlayed)
-        {
-            AudioClip clip = clips[clipIndex];
-            Debug.Log("Playing Sound: " + clip.name);
-            m_AudioSource.clip = clip;
-            m_AudioSource.Play();
-            hasPlayed = toPlay;
-        }
+        RpcPlayClip(clipName);
+    }
+
+    public void PlayClip(AudioClip clip)
+    {
+        CmdPlayClip(clip.name);
     }
 }

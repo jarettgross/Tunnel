@@ -77,7 +77,7 @@ public class PlayerController : NetworkBehaviour
 
     private void PlayLandingSound()
     {
-        m_SoundController.CmdPlayClip(m_LandSound);
+        m_SoundController.PlayClip(m_LandSound);
         m_NextStep = m_StepCycle + .5f;
     }
 
@@ -126,7 +126,7 @@ public class PlayerController : NetworkBehaviour
 
     private void PlayJumpSound()
     {
-        m_SoundController.CmdPlayClip(m_JumpSound);
+        m_SoundController.PlayClip(m_JumpSound);
     }
 
     private void ProgressStepCycle(float speed)
@@ -157,7 +157,7 @@ public class PlayerController : NetworkBehaviour
         // excluding sound at index 0
         int n = Random.Range(1, m_FootstepSounds.Length);
         AudioClip stepSound = m_FootstepSounds[n];
-        m_SoundController.CmdPlayClip(stepSound);
+        m_SoundController.PlayClip(stepSound);
         // move picked sound to index 0 so it's not picked next time
         m_FootstepSounds[n] = m_FootstepSounds[0];
         m_FootstepSounds[0] = stepSound;
