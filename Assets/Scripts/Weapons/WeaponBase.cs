@@ -39,13 +39,15 @@ public class WeaponBase : NetworkBehaviour {
 	protected GameObject weaponModel;
 
 	// Weapon muzzle flash instance
-	private ParticleSystem muzzleFlash;
+	//private ParticleSystem muzzleFlash;
 
 	// Time of last shot
 	private float lastFired;
 
 	// Instance of weapon model GameObject
 	private GameObject modelInstance;
+
+    private WeaponGraphics currentGraphics;
 
 	/*
 	 * Initialize private fields
@@ -92,6 +94,8 @@ public class WeaponBase : NetworkBehaviour {
 	[Command]
 	private void CmdEquip() {
 		modelInstance = (GameObject) Instantiate (weaponModel);
+        
+
 		NetworkServer.SpawnWithClientAuthority(modelInstance, connectionToClient);
 
 		RpcEquip(modelInstance);
@@ -110,6 +114,8 @@ public class WeaponBase : NetworkBehaviour {
 
 		modelInstance.transform.rotation = weaponModel.transform.rotation;
 		modelInstance.transform.SetParent(gameObject.transform, false);
+        currentGraphics = modelInstance.GetComponent<WeaponGraphics>();
+     
 		//muzzleFlash.transform.position = modelInstance.transform.position;
 	}
 
@@ -125,6 +131,7 @@ public class WeaponBase : NetworkBehaviour {
 
 	[ClientRpc]
 	private void RpcPlayMuzzleFlash() {
+        currentGraphics.muzzleFlash.Play();
 		//muzzleFlash.Play();
 	}
 
@@ -216,9 +223,9 @@ public class WeaponBase : NetworkBehaviour {
 		}
 	}
 
-	public ParticleSystem MuzzleFlash {
+	/*public ParticleSystem MuzzleFlash {
 		get {
 			return this.muzzleFlash;
 		}
-	}
+	}*/
 }
