@@ -63,7 +63,7 @@ public class WeaponController : NetworkBehaviour {
 	 */ 
 	public void Initialize() {
 		characterClass = GetComponent<CharacterClass>();
-
+        
 		CmdInitialize(characterClass.DefautWeapon.gameObject, characterClass.ClassWeapon1.gameObject, characterClass.ClassWeapon2.gameObject);
 	}
 
@@ -219,7 +219,7 @@ public class WeaponController : NetworkBehaviour {
 
 		Ray ray = new Ray (transform.position, transform.forward);
 
-		if (Physics.Raycast(ray, out hit, 100f, selfLayer)) {
+		if (Physics.Raycast(ray, out hit, currentWeapon.Range, selfLayer)) {
 			Debug.Log ("Hit: " + hit.collider.gameObject);
 
 			// Grab the position of the hit
