@@ -12,7 +12,7 @@ public class WeaponBase : NetworkBehaviour {
 	public ParticleSystem muzzleFlashPrefab;
 
 	[SerializeField] // Damage dealt by weapon
-	protected float damage = 10f;
+	public float damage = 10f;
 
 	[SerializeField] // Does weapon need to be reloaded
 	protected bool needsReload = true;
@@ -37,9 +37,6 @@ public class WeaponBase : NetworkBehaviour {
 
 	[SerializeField] // Weapon model
 	protected GameObject weaponModel;
-
-	// Weapon muzzle flash instance
-	//private ParticleSystem muzzleFlash;
 
 	// Time of last shot
 	private float lastFired;
@@ -95,7 +92,6 @@ public class WeaponBase : NetworkBehaviour {
 	private void CmdEquip() {
 		modelInstance = (GameObject) Instantiate (weaponModel);
         
-
 		NetworkServer.SpawnWithClientAuthority(modelInstance, connectionToClient);
 
 		RpcEquip(modelInstance);

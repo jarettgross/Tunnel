@@ -13,7 +13,6 @@ public class CustomNetworkManager : NetworkManager {
 	private List<GameObject> players;
 
 	// The scene clients should display first
-	private string startScene = "Character Select Menu";
 	private int playersReady;
 
 	override public void OnStartServer() {
@@ -85,6 +84,10 @@ public class CustomNetworkManager : NetworkManager {
 		if (playersReady == requiredPlayers) {
 			LoadWorld ();
 		}
+	}
+
+	public void CharacterSelectionScreenPlayerNotReady() {
+		playersReady--;
 	}
 
 

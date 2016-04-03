@@ -38,13 +38,13 @@ namespace UnityStandardAssets.Effects
                     lastSoundTime = Time.time;
                 }
 
-                var col = m_CollisionEvents[i].collider;
-                var attachedRigidbody = col.GetComponent<Rigidbody>();
-                if (attachedRigidbody != null)
-                {
-                    Vector3 vel = m_CollisionEvents[i].velocity;
-                    attachedRigidbody.AddForce(vel*force, ForceMode.Impulse);
-                }
+               // var col = m_CollisionEvents[i].collider;
+                //var attachedRigidbody = col.GetComponent<Rigidbody>();
+//                if (attachedRigidbody != null)
+//                {
+//                    Vector3 vel = m_CollisionEvents[i].velocity;
+//                    attachedRigidbody.AddForce(vel*force, ForceMode.Impulse);
+//                }
 
                 other.BroadcastMessage("Extinguish", SendMessageOptions.DontRequireReceiver);
 

@@ -8,10 +8,10 @@ public class CharacterClass : MonoBehaviour {
 	[SerializeField]
 	protected WeaponBase defaultWeapon;
 
-	[SerializeField] // dont set this
+	[SerializeField] // Only set this in a character class prefab
 	protected WeaponBase classWeapon1;
 
-	[SerializeField] // dont set this
+	[SerializeField] // Only set this in a character class prefab
 	protected WeaponBase classWeapon2;
 
 	[SerializeField]
@@ -22,6 +22,8 @@ public class CharacterClass : MonoBehaviour {
 
 	[SerializeField]
 	protected float runSpeed;
+
+	public string className;
 
 
 	public void Initialize(CharacterClass other) {
@@ -43,7 +45,7 @@ public class CharacterClass : MonoBehaviour {
 	
 	}
 
-	public WeaponBase DefautWeapon {
+	public WeaponBase DefaultWeapon {
 		get {
 			return defaultWeapon;
 		}

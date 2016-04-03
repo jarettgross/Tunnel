@@ -41,9 +41,18 @@ public class SceneController : NetworkBehaviour {
 		CmdCharacterReady ();
 	}
 
+	public void CharacterSelectionScreenNotReady() {
+		CmdCharacterNotReady ();
+	}
+
 	[Command]
 	private void CmdCharacterReady() {
 		networkManager.CharacterSelectionScreenPlayerReady (gameObject);
+	}
+
+	[Command]
+	private void CmdCharacterNotReady() {
+		networkManager.CharacterSelectionScreenPlayerNotReady ();
 	}
 
 

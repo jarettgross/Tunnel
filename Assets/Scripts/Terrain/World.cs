@@ -34,6 +34,10 @@ public class World : NetworkBehaviour {
 	private HashSet<Vector3> deformSet;
 	private Chunk[ , , ] chunks;
 
+	public GameObject wallMinX;
+	public GameObject wallMaxX;
+	public GameObject wallMinZ;
+	public GameObject wallMaxZ;
 
 	/*
 	 * Threading Stuff
@@ -145,25 +149,25 @@ public class World : NetworkBehaviour {
 		floor.transform.position = new Vector3 (sizeX * Chunk.CHUNK_X / 2, 0, sizeZ * Chunk.CHUNK_Z / 2);
 		DontDestroyOnLoad(floor);
 
-		GameObject wallMinX = Instantiate (wallPrefab);
+		wallMinX = Instantiate (wallPrefab);
 		wallMinX.transform.localScale = new Vector3 (sizeX, 1, sizeY);
 		wallMinX.transform.rotation = Quaternion.Euler (new Vector3 (90, 0, 0));
 		wallMinX.transform.position = new Vector3 (sizeX * Chunk.CHUNK_X / 2, sizeY * Chunk.CHUNK_Y / 2, 0);
 		DontDestroyOnLoad(wallMinX);
 
-		GameObject wallMaxX = Instantiate (wallPrefab);
+		wallMaxX = Instantiate (wallPrefab);
 		wallMaxX.transform.localScale = new Vector3 (sizeX, 1, sizeY);
 		wallMaxX.transform.rotation = Quaternion.Euler (new Vector3 (-90, 0, 0));
 		wallMaxX.transform.position = new Vector3 (sizeX * Chunk.CHUNK_X / 2, sizeY * Chunk.CHUNK_Y / 2, sizeZ * Chunk.CHUNK_Z);
 		DontDestroyOnLoad(wallMaxX);
 
-		GameObject wallMinZ = Instantiate (wallPrefab);
+		wallMinZ = Instantiate (wallPrefab);
 		wallMinZ.transform.localScale = new Vector3 (sizeY, 1, sizeZ);
 		wallMinZ.transform.rotation = Quaternion.Euler (new Vector3 (0, 0, -90));
 		wallMinZ.transform.position = new Vector3 (0, sizeY * Chunk.CHUNK_Y / 2, sizeZ * Chunk.CHUNK_Z / 2);
 		DontDestroyOnLoad(wallMinZ);
 
-		GameObject wallMaxZ = Instantiate (wallPrefab);
+		wallMaxZ = Instantiate (wallPrefab);
 		wallMaxZ.transform.localScale = new Vector3 (sizeY, 1, sizeZ);
 		wallMaxZ.transform.rotation = Quaternion.Euler (new Vector3 (0, 0, 90));
 		wallMaxZ.transform.position = new Vector3 (sizeX * Chunk.CHUNK_X, sizeY * Chunk.CHUNK_Y / 2, sizeZ * Chunk.CHUNK_Z / 2);

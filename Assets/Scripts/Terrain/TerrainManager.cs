@@ -90,6 +90,13 @@ public class TerrainManager : NetworkBehaviour {
 		world.UpdateWorld (position);
 	}
 
+	public void MoveWallsIn() {
+		world.wallMinX.transform.position = new Vector3 (world.wallMinX.transform.position.x, world.wallMinX.transform.position.y, world.wallMinX.transform.position.z + 10);
+		world.wallMaxX.transform.position = new Vector3 (world.wallMaxX.transform.position.x, world.wallMaxX.transform.position.y, world.wallMaxX.transform.position.z - 10);
+		world.wallMinZ.transform.position = new Vector3 (world.wallMinZ.transform.position.x + 10, world.wallMinZ.transform.position.y, world.wallMinZ.transform.position.z);
+		world.wallMaxZ.transform.position = new Vector3 (world.wallMaxZ.transform.position.x - 10, world.wallMaxZ.transform.position.y, world.wallMaxZ.transform.position.z);
+	}
+
 	public void Redraw() {
 		perlinNoise = new PerlinGenerator (sizeX * Chunk.CHUNK_X + 1, sizeY * Chunk.CHUNK_Y + 1, sizeZ * Chunk.CHUNK_Z + 1, noiseScale, seed, offset, octaves, persistance, lacunarity);
 		noise = functionNoise + perlinNoise;

@@ -12,7 +12,7 @@ public class CharacterSelector : MonoBehaviour {
 	public Text characterTitle;
 
 	private Transform container; //Holds all character models
-	private const float CIRCLE_RADIUS = 8.0f;
+	private const float CIRCLE_RADIUS = 7.0f;
 
 	private bool isRotating = false;
 	private float rotateTime = 0.0f;
@@ -20,13 +20,17 @@ public class CharacterSelector : MonoBehaviour {
 	private Quaternion initialRotation;
 	private Quaternion finalRotation;
 	private int rotationDirection;
-	private GameObject[] characters;
+
+	public GameObject[] characters;
 
 	private bool isNextButtonClick = false;
 	private bool isPrevButtonClick = false;
 
+	private bool isReady = false;
+
+	public Button readyButton;
+
 	void Start () {
-		characters = Resources.LoadAll<GameObject> ("CharacterPrefabs");
 		numClasses = characters.Length;
 		container = GameObject.Find ("CharacterContainer").transform;
 
@@ -42,7 +46,7 @@ public class CharacterSelector : MonoBehaviour {
 	}
 
 	void Update() {
-		if (!isRotating) {
+		if (!isRotating) { //then check for inputs
 			if (Input.GetKeyDown (KeyCode.RightArrow) || Input.GetKeyDown (KeyCode.D) || isNextButtonClick) {
 				isNextButtonClick = false;
 				rotationDirection = 1;
@@ -64,6 +68,10 @@ public class CharacterSelector : MonoBehaviour {
 
 		if (isRotating) {
 			ChangeCharacter ();
+		}
+
+		if (Input.GetKeyDown(KeyCode.Space)) {
+			SetReady ();
 		}
 	}
 
@@ -92,29 +100,19 @@ public class CharacterSelector : MonoBehaviour {
 		} else if (listIndex > numClasses - 1) {
 			listIndex = 0;
 		}
-
-		switch (listIndex) {
-		case 0:
-			characterTitle.text = "All-Around";
-			break;
-		case 1:
-			characterTitle.text = "Mobility";
-			break;
-		case 2:
-			characterTitle.text = "Long-Range";
-			break;
-		case 3:
-			characterTitle.text = "Stealth";
-			break;
-		case 4:
-			characterTitle.text = "Traps";
-			break;
-		}
+		characterTitle.text = characters [listIndex].GetComponent<CharacterClass>().className;
 	}
 
 
-	public void PlayGame() {
-		GameObject currentClass = characters[listIndex];
-		GameObject.Find("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady(currentClass);
+	public void SetReady() {
+		isReady = !isReady;
+		if (isReady) {
+			readyButton.image.color = Color.green;
+			GameObject currentClass = characters [listIndex]; //gets character class based on chosen prefab on select screen
+			GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady (currentClass);
+		} else {
+			readyButton.image.color = Color.red;
+			GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenNotReady ();
+		}
 	}
 }
