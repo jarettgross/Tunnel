@@ -91,6 +91,7 @@ public class TerrainManager : NetworkBehaviour {
 	}
 
 	public void MoveWallsIn() {
+		//Change to velocity
 		world.wallMinX.transform.position = new Vector3 (world.wallMinX.transform.position.x, world.wallMinX.transform.position.y, world.wallMinX.transform.position.z + 10);
 		world.wallMaxX.transform.position = new Vector3 (world.wallMaxX.transform.position.x, world.wallMaxX.transform.position.y, world.wallMaxX.transform.position.z - 10);
 		world.wallMinZ.transform.position = new Vector3 (world.wallMinZ.transform.position.x + 10, world.wallMinZ.transform.position.y, world.wallMinZ.transform.position.z);
