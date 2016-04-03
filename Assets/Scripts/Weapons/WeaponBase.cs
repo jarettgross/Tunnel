@@ -127,8 +127,9 @@ public class WeaponBase : NetworkBehaviour {
 
 	[ClientRpc]
 	private void RpcPlayMuzzleFlash() {
-        currentGraphics.muzzleFlash.Play();
-		//muzzleFlash.Play();
+		if (currentGraphics != null) {
+			currentGraphics.muzzleFlash.Play ();
+		}
 	}
 
 	/* * * * * * * * * * * * * * * *
