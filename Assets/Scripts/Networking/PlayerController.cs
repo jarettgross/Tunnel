@@ -10,14 +10,14 @@ public class PlayerController : NetworkBehaviour
     [SerializeField] private bool m_IsWalking;
     [SerializeField] private float m_WalkSpeed;
     [SerializeField] private float m_RunSpeed;
-    [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten;
-    [SerializeField] private float m_JumpSpeed;
-    [SerializeField] private float m_StickToGroundForce;
-    [SerializeField] private float m_GravityMultiplier;
-    [SerializeField] private float m_StepInterval;
-    [SerializeField] private AudioClip[] m_FootstepSounds;    // an array of footstep sounds that will be randomly selected from.
-    [SerializeField] private AudioClip m_JumpSound;           // the sound played when character leaves the ground.
-    [SerializeField] private AudioClip m_LandSound;           // the sound played when character touches back on ground.
+    [SerializeField] [Range(0f, 1f)] private float m_RunstepLenghten = 0.0f;
+	[SerializeField] private float m_JumpSpeed = 0.0f;
+	[SerializeField] private float m_StickToGroundForce = 0.0f;
+	[SerializeField] private float m_GravityMultiplier = 0.0f;
+	[SerializeField] private float m_StepInterval = 0.0f;
+	[SerializeField] private AudioClip[] m_FootstepSounds = null;    // an array of footstep sounds that will be randomly selected from.
+	[SerializeField] private AudioClip m_JumpSound = null;           // the sound played when character leaves the ground.
+    [SerializeField] private AudioClip m_LandSound = null;           // the sound played when character touches back on ground.
 
     private bool m_Jump;
     private Vector2 m_Input;
@@ -29,6 +29,8 @@ public class PlayerController : NetworkBehaviour
     private float m_NextStep;
     private bool m_Jumping;
     private SoundController m_SoundController;
+
+	[SerializeField] private ParticleSystem hitEffect = null;
 
     // Use this for initialization
     private void Start()
@@ -203,17 +205,26 @@ public class PlayerController : NetworkBehaviour
         body.AddForceAtPosition(m_CharacterController.velocity*0.1f, hit.point, ForceMode.Impulse);
     }
 
-	private void SetMine() {
-		float playerDistToGround = gameObject.GetComponent<Collider> ().bounds.extents.y;
-		if (Physics.Raycast (gameObject.transform.position, -Vector3.up, playerDistToGround + 0.1f)) {
-			Vector3 minePos = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y - (playerDistToGround - 0.1f), gameObject.transform.position.z);
-			GameObject mineObj = (GameObject)Instantiate (Resources.Load("MineWeapon"), minePos, gameObject.transform.rotation);
-			mineObj.GetComponent<Mine> ().owner = gameObject;
-		}
-	}
+	//******************ADD THESE IN LATER
 
-	private void SetJetpack() {
-		GameObject jetpackObj = (GameObject)Instantiate (Resources.Load ("Jetpack"), gameObject.transform.position, gameObject.transform.rotation);
-		jetpackObj.GetComponent<Jetpack> ().owner = gameObject;
+//	private void SetMine() {
+//		float playerDistToGround = gameObject.GetComponent<Collider> ().bounds.extents.y;
+//		if (Physics.Raycast (gameObject.transform.position, -Vector3.up, playerDistToGround + 0.1f)) {
+//			Vector3 minePos = new Vector3 (gameObject.transform.position.x, gameObject.transform.position.y - (playerDistToGround - 0.1f), gameObject.transform.position.z);
+//			GameObject mineObj = (GameObject)Instantiate (Resources.Load("MineWeapon"), minePos, gameObject.transform.rotation);
+//			mineObj.GetComponent<Mine> ().owner = gameObject;
+//		}
+//	}
+//
+//	private void SetJetpack() {
+//		GameObject jetpackObj = (GameObject)Instantiate (Resources.Load ("Jetpack"), gameObject.transform.position, gameObject.transform.rotation);
+//		jetpackObj.GetComponent<Jetpack> ().owner = gameObject;
+//	}
+
+	//*********************
+
+	public void PlayHitEffect(Vector3 hitDirection) {
+		hitEffect.startColor = gameObject.GetComponent<Renderer> ().material.color;
+		Destroy (Instantiate (hitEffect, gameObject.transform.position, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as GameObject, hitEffect.startLifetime);
 	}
 }

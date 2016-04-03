@@ -12,6 +12,8 @@ public class TerrainController : NetworkBehaviour {
 	private TerrainManager terrainManager;
 
 	private bool ready = false;
+	private float readyTime = 0.0f;
+	private bool[] moveTime = new bool[3];
 
 	public override void OnStartLocalPlayer() {
 		layerMask = ~layerMask;
@@ -29,11 +31,25 @@ public class TerrainController : NetworkBehaviour {
 		terrainManager = tm.GetComponent<TerrainManager> ();
 		gameObject.transform.position = new Vector3 (5, 20, 5);
 		ready = true;
+		readyTime = Time.time;
 	}
 
 
 	// Update is called once per frame
 	void Update () {
+
+		if (ready) {
+			if (!moveTime [0] && (Time.time - readyTime) > 10) {
+				moveTime [0] = true;
+				terrainManager.MoveWallsIn ();
+			} else if (!moveTime [1] && (Time.time - readyTime) > 20) {
+				moveTime [1] = true;
+				terrainManager.MoveWallsIn ();
+			} else if (!moveTime [2] && (Time.time - readyTime) > 30) {
+				moveTime [2] = true;
+				terrainManager.MoveWallsIn ();
+			}
+		}
 
 		if (!isLocalPlayer)
 			return;

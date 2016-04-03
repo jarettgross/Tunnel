@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 public class PlayerSetup : NetworkBehaviour {
 
     [SerializeField] //Disable the components of another player
-    Behaviour[] componentsToDisable;
+    Behaviour[] componentsToDisable = null;
 
     [SerializeField]
     string remoteLayerName = "RemotePlayer";

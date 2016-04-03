@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9aab8a208f50cc4429373da6fe4d1c9a
+timeCreated: 1459628626
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - defaultWeapon: {fileID: 11487938, guid: 2c8faac7d0bc04f318c46e73686ef0ab, type: 2}
+  - classWeapon1: {fileID: 11443562, guid: 8880fdabb36065f489c3c8f02a279341, type: 2}
+  - classWeapon2: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
