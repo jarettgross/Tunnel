@@ -9,7 +9,7 @@ public class WeaponController : NetworkBehaviour {
 	// Temporary starting weapon
 	public GameObject tempStarterWeapon;
 
-	// Temporary secondary weapon
+	// Temporary secondary weapons
 	public GameObject tempSecondaryWeapon;
 
 	/* * * * * * * * * * * * * * * * * * * * */
