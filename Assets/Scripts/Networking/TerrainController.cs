@@ -38,18 +38,18 @@ public class TerrainController : NetworkBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (ready) {
-			if (!moveTime [0] && (Time.time - readyTime) > 10) {
-				moveTime [0] = true;
-				terrainManager.MoveWallsIn ();
-			} else if (!moveTime [1] && (Time.time - readyTime) > 20) {
-				moveTime [1] = true;
-				terrainManager.MoveWallsIn ();
-			} else if (!moveTime [2] && (Time.time - readyTime) > 30) {
-				moveTime [2] = true;
-				terrainManager.MoveWallsIn ();
-			}
-		}
+//		if (ready) {
+//			if (!moveTime [0] && (Time.time - readyTime) > 10) {
+//				moveTime [0] = true;
+//				terrainManager.MoveWallsIn ();
+//			} else if (!moveTime [1] && (Time.time - readyTime) > 20) {
+//				moveTime [1] = true;
+//				terrainManager.MoveWallsIn ();
+//			} else if (!moveTime [2] && (Time.time - readyTime) > 30) {
+//				moveTime [2] = true;
+//				terrainManager.MoveWallsIn ();
+//			}
+//		}
 
 		if (!isLocalPlayer)
 			return;
