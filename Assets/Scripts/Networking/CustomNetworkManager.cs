@@ -10,16 +10,26 @@ public class CustomNetworkManager : NetworkManager {
 	public GameObject terrainManagerPrefab;
 
 	//private Dictionary<NetworkConnection, GameObject> connections;
-	private List<GameObject> players;
+	private Dictionary<GameObject, int> players;
 
 	// The scene clients should display first
-	private int playersReady;
+	private PlayerState[] playerStates;
+
+	enum PlayerState {
+		NOT_CONNECTED,
+		CONNECTED,
+		READY
+	};
+
 
 	override public void OnStartServer() {
 		Debug.Log ("Server Starting");
 
-		players = new List<GameObject> ();
-		playersReady = 0;
+		players = new Dictionary<GameObject, int>();
+		playerStates = new PlayerState[requiredPlayers];
+		for (int i = 0; i < requiredPlayers; i++) {
+			playerStates[i] = PlayerState.NOT_CONNECTED;
+		}
 	}
 
 	override public void OnServerConnect(NetworkConnection conn) {
@@ -36,14 +46,33 @@ public class CustomNetworkManager : NetworkManager {
 		// Alert new player of existing players
 		RegisterPlayers(player);
 
-		players.Add(player);
+		int id = GetNextId();
+		if (id == -1) {
+			Debug.LogError("Game already full, too many players");
+		}
+		
+
+		players.Add(player, id);
 
 		Debug.Log ("Player " + players.Count + " joined");
 	}
 
 	public override void OnServerRemovePlayer(NetworkConnection conn, UnityEngine.Networking.PlayerController player) {
 		base.OnServerRemovePlayer (conn, player);
+		int index = 0;
+		players.TryGetValue(player.gameObject, out index);
+
+		playerStates[index] = PlayerState.NOT_CONNECTED;
 		players.Remove (player.gameObject);
+	}
+
+	private int GetNextId() {
+		for (int i = 0; i < requiredPlayers; i++) {
+			if (playerStates[i] == PlayerState.NOT_CONNECTED)
+				return i;
+		}
+
+		return -1;
 	}
 
 	/* * * * * * * * * * * * * * * * * 
@@ -59,7 +88,7 @@ public class CustomNetworkManager : NetworkManager {
 	 * Registers existing players with a new player who has joined
 	 */ 
 	private void RegisterPlayers(GameObject _player) {
-		foreach (GameObject player in players) {
+		foreach (GameObject player in players.Keys) {
 			_player.GetComponent<SceneController> ().RpcRegisterPlayer(player);
 			player.GetComponent<SceneController> ().RpcRegisterPlayer(_player);
 		}
@@ -73,21 +102,23 @@ public class CustomNetworkManager : NetworkManager {
 	/*
 	 * Alerts server player in character selection screen is ready
 	 */
-	public void CharacterSelectionScreenPlayerReady(GameObject gameObject) {
+	public void CharacterSelectionScreenPlayerReady(GameObject player) {
+		int index = 0;
+		players.TryGetValue(player, out index);
+		playerStates[index] = PlayerState.READY;
 
-		if (players.Count != requiredPlayers) {
-			return;
+		foreach (PlayerState state in playerStates) {
+			if (state != PlayerState.READY)
+				return;
 		}
 
-		playersReady++;
-
-		if (playersReady == requiredPlayers) {
-			LoadWorld ();
-		}
+		LoadWorld();
 	}
 
-	public void CharacterSelectionScreenPlayerNotReady() {
-		playersReady--;
+	public void CharacterSelectionScreenPlayerNotReady(GameObject player) {
+		int index = 0;
+		players.TryGetValue(player, out index);
+		playerStates[index] = PlayerState.CONNECTED;
 	}
 
 
@@ -99,7 +130,7 @@ public class CustomNetworkManager : NetworkManager {
 	* Tells all connected clients to load the world 
 	*/
 	public void LoadWorld() {
-		foreach (GameObject player in players) {
+		foreach (GameObject player in players.Keys) {
 			player.GetComponent<SceneController> ().RpcLoadWorld();
 		}
 	}
@@ -116,8 +147,19 @@ public class CustomNetworkManager : NetworkManager {
 	 * Sends a deformation to all connected clients
 	 */
 	public void SendDeformation(Deformation deformation) {
-		foreach (GameObject player in players) {
+		foreach (GameObject player in players.Keys) {
 			player.GetComponent<TerrainController> ().RpcDeform (deformation.Position, deformation.GetDeformationType(), deformation.Radius);
 		}
+	}
+
+		/* * * * * * * * * * * * * * * * * 
+		 * Player Messages
+		 * * * * * * * * * * * * * * * * */
+
+	/*
+	 * Called when a player has died
+	 */
+	public void PlayerDied(GameObject player) {
+		player.transform.position = new Vector3(5, 20, 5);
 	}
 }

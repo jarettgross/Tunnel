@@ -14,7 +14,6 @@ public class WeaponController : NetworkBehaviour {
 
 	/* * * * * * * * * * * * * * * * * * * * */
 
-
 	// Camera for ray casting
 	public Camera weaponView;
 
@@ -309,7 +308,16 @@ public class WeaponController : NetworkBehaviour {
 		WeaponBase weaponBase = weapon.GetComponent<WeaponBase>();
 
 		// Apply damage to player
-		target.GetComponent<PlayerGUI>().ReceiveDamage(weaponBase.Damage);
 		target.GetComponent<PlayerGUI>().isDamaged = true;
+		bool dead = target.GetComponent<PlayerGUI>().ReceiveDamage(weaponBase.Damage);
+
+		if (dead) {
+			PlayerDied(target);
+		}
+	}
+		
+	private void PlayerDied(GameObject player) {
+		Debug.Log("Player " + player + " died");
+		player.transform.position = new Vector3(5, 20, 5);
 	}
 }

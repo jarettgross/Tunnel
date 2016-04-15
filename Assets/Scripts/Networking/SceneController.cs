@@ -52,7 +52,7 @@ public class SceneController : NetworkBehaviour {
 
 	[Command]
 	private void CmdCharacterNotReady() {
-		networkManager.CharacterSelectionScreenPlayerNotReady ();
+		networkManager.CharacterSelectionScreenPlayerNotReady (gameObject);
 	}
 
 

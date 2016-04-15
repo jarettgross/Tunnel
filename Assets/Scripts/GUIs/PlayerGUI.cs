@@ -34,20 +34,17 @@ public class PlayerGUI : NetworkBehaviour {
 		currentHealth = hitPoints;
 	}
 
-	public void ReceiveDamage(float damageAmount) {
+	public bool ReceiveDamage(float damageAmount) {
 		currentHealth -= damageAmount;
 		if (currentHealth <= 0) {
-			Die();
+			return true;
 		}
 		Debug.Log("Took damage. Health now: " + currentHealth);
+		return false;
 	}
 
 	public float HealthRatio() {
 		return currentHealth / hitPoints;
-	}
-
-	void Die() {
-		Destroy(gameObject);
 	}
 
 	//Flash screen red on hit
