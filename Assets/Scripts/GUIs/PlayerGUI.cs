@@ -13,16 +13,6 @@ public class PlayerGUI : NetworkBehaviour {
 
 	//*****************************
 
-	//PLAYER DAMAGE NOTICE
-	public Texture damageNotice;
-	private const float endDamageNoticeAlpha = 0.8f;
-	private float damageNoticeTime = 0.0f;
-	private float damageNoticeTimeScale = 0.5f;
-	public bool isDamaged = false;
-	private Rect damageNoticeRect = new Rect(0.0f, 0.0f, 1.0f, 1.0f);
-
-	//*****************************
-
 	void Awake() {
 		hitPoints = 100;
 		currentHealth = hitPoints;
@@ -37,6 +27,7 @@ public class PlayerGUI : NetworkBehaviour {
 	public bool ReceiveDamage(float damageAmount) {
 		currentHealth -= damageAmount;
 		if (currentHealth <= 0) {
+			Destroy (gameObject);
 			return true;
 		}
 		Debug.Log("Took damage. Health now: " + currentHealth);
@@ -45,33 +36,5 @@ public class PlayerGUI : NetworkBehaviour {
 
 	public float HealthRatio() {
 		return currentHealth / hitPoints;
-	}
-
-	//Flash screen red on hit
-	void OnGUI() {
-		if (isDamaged) {
-			if (GUI.color.a != endDamageNoticeAlpha) {
-				float currentAlpha = GUI.color.a;
-				Color tempColor = GUI.color;
-				tempColor.a = Mathf.Lerp (currentAlpha, endDamageNoticeAlpha, damageNoticeTime / damageNoticeTimeScale); //change alpha
-				GUI.color = tempColor;
-				GUI.DrawTexture (damageNoticeRect, damageNotice);
-				damageNoticeTime += Time.deltaTime;
-				if (GUI.color.a == endDamageNoticeAlpha) { //once alpha is 0, done turning invisible
-					damageNoticeTime = 0.0f;
-				}
-			} else {
-				float currentAlpha = GUI.color.a;
-				Color tempColor = GUI.color;
-				tempColor.a = Mathf.Lerp (0.0f, currentAlpha, damageNoticeTime / damageNoticeTimeScale); //change alpha
-				GUI.color = tempColor;
-				GUI.DrawTexture (damageNoticeRect, damageNotice);
-				damageNoticeTime += Time.deltaTime;
-				if (GUI.color.a == endDamageNoticeAlpha) { //once alpha is 0, done turning invisible
-					damageNoticeTime = 0.0f;
-					isDamaged = false;
-				}
-			}
-		}
 	}
 }

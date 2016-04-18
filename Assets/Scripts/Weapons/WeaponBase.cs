@@ -21,7 +21,8 @@ public class WeaponBase : NetworkBehaviour {
 	protected bool isAutomatic = false;
 
 	[SerializeField] // Number of bullets in a clip
-	protected int clipSize = 10;
+	protected int clipSize = 1000;
+	public int currentClipSize;
 
 	[SerializeField] // Distance from impact point at which player will be hurt by weapon blast
 	protected float hitboxRadius = 0;
@@ -52,6 +53,7 @@ public class WeaponBase : NetworkBehaviour {
 	public void Start() {
 		lastFired = 0;
 		modelInstance = null;
+		currentClipSize = clipSize;
 		//muzzleFlash = ((GameObject)Instantiate(muzzleFlashPrefab.gameObject, Vector3.zero, Quaternion.identity)).GetComponent<ParticleSystem>();
 	}
 

@@ -47,6 +47,7 @@ public class WeaponController : NetworkBehaviour {
 
 	// If the grenade is active and thrown
 	private bool isThrown = false;
+	private bool preventWeaponSwitch = false;
 
 	/*
 	 * Initialize weapon fields
@@ -99,22 +100,23 @@ public class WeaponController : NetworkBehaviour {
 
 		if (currentWeapon == null)
 			return;
-
-		if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
-			if (Input.GetMouseButtonDown (0)) {
-				// Automatic weapon will repeat shooting according firerate
-				InvokeRepeating ("Shoot", 0f, GetCurrentWeapon ().Cooldown); 
-			} else if (Input.GetMouseButtonUp (0)) {
-				// Stop invoking Shoot
-				CancelInvoke ("Shoot");  
-			}
-		} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
-			if (Input.GetMouseButtonDown(0) && GetCurrentWeapon().Ready()) {
-				StartCoroutine(ThrowGrenade());
-			}
-		} else if (!GetCurrentWeapon ().IsAutomatic) { //Non-automatic weapon
-			if (Input.GetMouseButtonDown(0) && GetCurrentWeapon().Ready()) {
-				Shoot();
+		if (!preventWeaponSwitch) {
+			if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
+				if (Input.GetMouseButtonDown (0)) {
+					// Automatic weapon will repeat shooting according firerate
+					InvokeRepeating ("Shoot", 0f, GetCurrentWeapon ().Cooldown); 
+				} else if (Input.GetMouseButtonUp (0)) {
+					// Stop invoking Shoot
+					CancelInvoke ("Shoot");  
+				}
+			} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
+				if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+					StartCoroutine (ThrowGrenade ());
+				}
+			} else if (!GetCurrentWeapon ().IsAutomatic) { //Non-automatic weapon
+				if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+					Shoot ();
+				}
 			}
 		}
 
@@ -151,26 +153,29 @@ public class WeaponController : NetworkBehaviour {
 
 		// Equip new weapon
 		currentWeapon.Equip();
+		GetComponent<HealthBar> ().SetCurrentWeapon (currentWeapon.gameObject);
     }
 
 	/*
 	 * Switch weapons based on middle mouse scroll value
 	 */ 
 	private void SwitchWeapon(float delta) {
-		int newWeaponSlot = currentWeaponSlot;
+		if (!preventWeaponSwitch) {
+			int newWeaponSlot = currentWeaponSlot;
 
-		if (delta > 0) {
-			newWeaponSlot = currentWeaponSlot + 1;
-			if (newWeaponSlot >= weapons.Count)
-				newWeaponSlot = 0;
-		} else {
-			newWeaponSlot = currentWeaponSlot - 1;
-			if (newWeaponSlot < 0)
-				newWeaponSlot = weapons.Count - 1;
-		}
+			if (delta > 0) {
+				newWeaponSlot = currentWeaponSlot + 1;
+				if (newWeaponSlot >= weapons.Count)
+					newWeaponSlot = 0;
+			} else {
+				newWeaponSlot = currentWeaponSlot - 1;
+				if (newWeaponSlot < 0)
+					newWeaponSlot = weapons.Count - 1;
+			}
 
-		if (newWeaponSlot != currentWeaponSlot) {
-			EquipWeapon(newWeaponSlot);
+			if (newWeaponSlot != currentWeaponSlot) {
+				EquipWeapon (newWeaponSlot);
+			}
 		}
 	}
 
@@ -231,6 +236,7 @@ public class WeaponController : NetworkBehaviour {
 		RaycastHit hit;
 
 		Ray ray = new Ray (transform.position, transform.forward);
+		GetCurrentWeapon ().currentClipSize -= 1;
 
 		if (Physics.Raycast(ray, out hit, currentWeapon.Range, selfLayer)) {
 			Debug.Log ("Hit: " + hit.collider.gameObject);
@@ -264,38 +270,41 @@ public class WeaponController : NetworkBehaviour {
 
 	[Client]
 	public IEnumerator ThrowGrenade() {
+		preventWeaponSwitch = true;
+		WeaponBase grenade = GetCurrentWeapon ();
+		grenade.currentClipSize -= 1;
 		if (!isLocalPlayer) {
 			yield break;
 		}
 		isThrown = true;
 		//Throw grenade
-		GetCurrentWeapon().transform.parent = null;
+		grenade.transform.parent = null;
 		Vector3 directionFacing = weaponView.transform.forward.normalized;
-		Vector3 forceVector = new Vector3(directionFacing.x, Mathf.Abs(directionFacing.y * 5), directionFacing.z) * GetCurrentWeapon().GetComponent<Grenade>().throwForce;
-		GetCurrentWeapon().GetComponent<Grenade>().gameObject.AddComponent<Rigidbody> ();
-		Physics.IgnoreCollision (gameObject.GetComponent<Collider> (), GetCurrentWeapon ().GetComponent<Grenade> ().GetComponent<Collider> ());
-		GetCurrentWeapon().GetComponent<Grenade>().gameObject.GetComponent<Rigidbody>().AddForce (forceVector);
+		Vector3 forceVector = new Vector3(directionFacing.x, directionFacing.y, directionFacing.z) * GetCurrentWeapon().GetComponent<Grenade>().throwForce;
+		grenade.GetComponent<Grenade>().gameObject.AddComponent<Rigidbody> ();
+		Physics.IgnoreCollision (gameObject.GetComponent<Collider> (), grenade.GetComponent<Grenade> ().GetComponent<Collider> ());
+		grenade.GetComponent<Grenade>().gameObject.GetComponent<Rigidbody>().AddForce (forceVector);
 
 		yield return new WaitForSeconds(3);
 
 		//Check for grenade collisions
-		Collider[] objectsInExplosion = Physics.OverlapSphere (GetCurrentWeapon().GetComponent<Grenade>().gameObject.transform.position, GetCurrentWeapon().DeformationRadius);
+		Collider[] objectsInExplosion = Physics.OverlapSphere (grenade.GetComponent<Grenade>().gameObject.transform.position, grenade.DeformationRadius);
 		foreach (Collider col in objectsInExplosion) {
 			if (col.gameObject.GetComponent<PlayerGUI>() != null) {
-				float distanceToBlast = (GetCurrentWeapon().transform.position - col.gameObject.transform.position).magnitude;
-				float damageDropoff = 1 - distanceToBlast / GetCurrentWeapon().DeformationRadius; //linear dropoff
-				GetCurrentWeapon().damage *= damageDropoff;
-				CmdHandleShot (col.gameObject, GetCurrentWeapon ().gameObject);
+				float distanceToBlast = (grenade.transform.position - col.gameObject.transform.position).magnitude;
+				float damageDropoff = 1 - distanceToBlast / grenade.DeformationRadius; //linear dropoff
+				grenade.damage *= damageDropoff;
+				CmdHandleShot (col.gameObject, grenade.gameObject);
 			}
 		}
-		GetComponent<TerrainController> ().CmdDeform (GetCurrentWeapon().transform.position, GetCurrentWeapon ().DeformationRadius);
+		GetComponent<TerrainController> ().CmdDeform (grenade.transform.position, grenade.DeformationRadius);
 
 		Destroy (currentWeapon.GetComponent<Grenade> ().gameObject.GetComponent<Rigidbody> ());
-		GetCurrentWeapon().transform.SetParent(weaponHolder, false);
+		grenade.transform.SetParent(weaponHolder, false);
 		currentWeapon.transform.position = weaponHolder.position;
 		currentWeapon.transform.rotation = weaponHolder.rotation;
 		isThrown = false;
-
+		preventWeaponSwitch = false;
 	}
 
 	/*
@@ -308,7 +317,6 @@ public class WeaponController : NetworkBehaviour {
 		WeaponBase weaponBase = weapon.GetComponent<WeaponBase>();
 
 		// Apply damage to player
-		target.GetComponent<PlayerGUI>().isDamaged = true;
 		bool dead = target.GetComponent<PlayerGUI>().ReceiveDamage(weaponBase.Damage);
 
 		if (dead) {
