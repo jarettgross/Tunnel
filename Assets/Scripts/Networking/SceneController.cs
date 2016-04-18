@@ -45,7 +45,12 @@ public class SceneController : NetworkBehaviour {
 		CmdCharacterNotReady ();
 	}
 
-	[Command]
+    public void CharacterSelectionScreenStartGame()
+    {
+        CmdCharacterStartGame();
+    }
+
+    [Command]
 	private void CmdCharacterReady() {
 		networkManager.CharacterSelectionScreenPlayerReady (gameObject);
 	}
@@ -55,12 +60,18 @@ public class SceneController : NetworkBehaviour {
 		networkManager.CharacterSelectionScreenPlayerNotReady (gameObject);
 	}
 
+    [Command]
+    private void CmdCharacterStartGame()
+    {
+        networkManager.CharacterSelectionScreenStartGame();
+    }
 
-	/* * * * * * * * * * * * * * * * * 
+
+    /* * * * * * * * * * * * * * * * * 
 	 * Start World Messages
 	 * * * * * * * * * * * * * * * * */
 
-	[ClientRpc]
+    [ClientRpc]
 	public void RpcLoadWorld() {
 		if (!isLocalPlayer)
 			return;

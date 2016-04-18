@@ -51,8 +51,8 @@ public class CustomNetworkManager : NetworkManager {
 			Debug.LogError("Game already full, too many players");
 		}
 		
-
 		players.Add(player, id);
+        playerStates[id] = PlayerState.CONNECTED;
 
 		Debug.Log ("Player " + players.Count + " joined");
 	}
@@ -103,35 +103,75 @@ public class CustomNetworkManager : NetworkManager {
 	 * Alerts server player in character selection screen is ready
 	 */
 	public void CharacterSelectionScreenPlayerReady(GameObject player) {
-		int index = 0;
+		int index = -1;
 		players.TryGetValue(player, out index);
-		playerStates[index] = PlayerState.READY;
-
-		foreach (PlayerState state in playerStates) {
-			if (state != PlayerState.READY)
-				return;
-		}
-
-		LoadWorld();
+        Debug.Log("Ready: " + index);
+        if (index >= 0)
+        {
+            playerStates[index] = PlayerState.READY;
+        }
+        else
+        {
+            Debug.Log("Error: Missing Player");
+        }
 	}
 
 	public void CharacterSelectionScreenPlayerNotReady(GameObject player) {
-		int index = 0;
+		int index = -1;
 		players.TryGetValue(player, out index);
-		playerStates[index] = PlayerState.CONNECTED;
+        if (index >= 0)
+        {
+            playerStates[index] = PlayerState.CONNECTED;
+        }
+        else
+        {
+            Debug.Log("Error: Missing Player");
+        }
 	}
 
+    /*
+	 * Alerts server player that someone started the game.
+     * Half the players need to be ready for a game to start
+	 */
+    public void CharacterSelectionScreenStartGame()
+    {
+        int readyCount = 0;
+        int connectedCount = 0;
+        foreach (PlayerState state in playerStates)
+        {
+            if (state == PlayerState.READY)
+            {
+                readyCount++;
+                connectedCount++;
+            }
+            else if (state == PlayerState.CONNECTED)
+            {
+                connectedCount++;
+            }
+        }
+        if (readyCount*2 >= connectedCount)
+        {
+            LoadWorld();
+        }
+    }
 
-		/* * * * * * * * * * * * * * * * * 
+        /* * * * * * * * * * * * * * * * * 
 		 * World Messages
 		 * * * * * * * * * * * * * * * * */
 
-	/*
-	* Tells all connected clients to load the world 
-	*/
-	public void LoadWorld() {
-		foreach (GameObject player in players.Keys) {
-			player.GetComponent<SceneController> ().RpcLoadWorld();
+        /*
+        * Tells all connected clients to load the world 
+        */
+    public void LoadWorld() {
+		foreach (KeyValuePair<GameObject, int> player in players) {
+            if (player.Key != null)
+            {
+                PlayerState state = playerStates[player.Value];
+                if (state == PlayerState.READY || state == PlayerState.CONNECTED)
+                {
+                    player.Key.GetComponent<SceneController>().RpcLoadWorld();
+                }
+            }
 		}
 	}
 

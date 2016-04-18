@@ -29,8 +29,9 @@ public class CharacterSelector : MonoBehaviour {
 	private bool isReady = false;
 
 	public Button readyButton;
+    public Button startGameButton;
 
-	void Start () {
+    void Start () {
 		numClasses = characters.Length;
 		container = GameObject.Find ("CharacterContainer").transform;
 
@@ -108,11 +109,21 @@ public class CharacterSelector : MonoBehaviour {
 		isReady = !isReady;
 		if (isReady) {
 			readyButton.image.color = Color.green;
+            startGameButton.gameObject.SetActive(true);
 			GameObject currentClass = characters [listIndex]; //gets character class based on chosen prefab on select screen
 			GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady (currentClass);
 		} else {
 			readyButton.image.color = Color.red;
-			GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenNotReady ();
+            startGameButton.gameObject.SetActive(false);
+            GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenNotReady ();
 		}
 	}
+
+    public void StartGame()
+    {
+        if (isReady)
+        {
+            GameObject.Find("Network Manager").GetComponent<CustomNetworkManager>().client.connection.playerControllers[0].gameObject.GetComponent<SceneController>().CharacterSelectionScreenStartGame();
+        }
+    }
 }
