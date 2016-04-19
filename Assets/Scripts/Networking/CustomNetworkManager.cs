@@ -11,6 +11,7 @@ public class CustomNetworkManager : NetworkManager {
 
 	//private Dictionary<NetworkConnection, GameObject> connections;
 	private Dictionary<GameObject, int> players;
+    private Dictionary<NetworkConnection, GameObject> connections;
 
 	// The scene clients should display first
 	private PlayerState[] playerStates;
@@ -26,6 +27,7 @@ public class CustomNetworkManager : NetworkManager {
 		Debug.Log ("Server Starting");
 
 		players = new Dictionary<GameObject, int>();
+        connections = new Dictionary<NetworkConnection, GameObject>();
 		playerStates = new PlayerState[requiredPlayers];
 		for (int i = 0; i < requiredPlayers; i++) {
 			playerStates[i] = PlayerState.NOT_CONNECTED;
@@ -52,9 +54,10 @@ public class CustomNetworkManager : NetworkManager {
 		}
 		
 		players.Add(player, id);
+        connections.Add(conn, player);
         playerStates[id] = PlayerState.CONNECTED;
 
-		Debug.Log ("Player " + players.Count + " joined");
+		Debug.Log ("Player " + id + " joined");
 	}
 
 	public override void OnServerRemovePlayer(NetworkConnection conn, UnityEngine.Networking.PlayerController player) {
@@ -64,9 +67,25 @@ public class CustomNetworkManager : NetworkManager {
 
 		playerStates[index] = PlayerState.NOT_CONNECTED;
 		players.Remove (player.gameObject);
+        connections.Remove(conn);
+        Debug.Log("Player " + index + " removed");
 	}
 
-	private int GetNextId() {
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        base.OnServerDisconnect(conn);
+        int index = 0;
+        GameObject player;
+        connections.TryGetValue(conn, out player);
+        players.TryGetValue(player, out index);
+
+        playerStates[index] = PlayerState.NOT_CONNECTED;
+        players.Remove(player);
+        connections.Remove(conn);
+        Debug.Log("Player " + index + " disconnected");
+    }
+
+    private int GetNextId() {
 		for (int i = 0; i < requiredPlayers; i++) {
 			if (playerStates[i] == PlayerState.NOT_CONNECTED)
 				return i;
@@ -131,28 +150,18 @@ public class CustomNetworkManager : NetworkManager {
 
     /*
 	 * Alerts server player that someone started the game.
-     * Half the players need to be ready for a game to start
+     * All players need to be ready for a game to start
 	 */
     public void CharacterSelectionScreenStartGame()
     {
-        int readyCount = 0;
-        int connectedCount = 0;
         foreach (PlayerState state in playerStates)
         {
-            if (state == PlayerState.READY)
+            if (state == PlayerState.CONNECTED)
             {
-                readyCount++;
-                connectedCount++;
-            }
-            else if (state == PlayerState.CONNECTED)
-            {
-                connectedCount++;
+                return;
             }
         }
-        if (readyCount*2 >= connectedCount)
-        {
-            LoadWorld();
-        }
+        LoadWorld();
     }
 
         /* * * * * * * * * * * * * * * * * 
