@@ -100,22 +100,24 @@ public class WeaponController : NetworkBehaviour {
 
 		if (currentWeapon == null)
 			return;
-		if (!preventWeaponSwitch) {
-			if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
-				if (Input.GetMouseButtonDown (0)) {
-					// Automatic weapon will repeat shooting according firerate
-					InvokeRepeating ("Shoot", 0f, GetCurrentWeapon ().Cooldown); 
-				} else if (Input.GetMouseButtonUp (0)) {
-					// Stop invoking Shoot
-					CancelInvoke ("Shoot");  
-				}
-			} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
-				if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
-					StartCoroutine (ThrowGrenade ());
-				}
-			} else if (!GetCurrentWeapon ().IsAutomatic) { //Non-automatic weapon
-				if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
-					Shoot ();
+		if (GetCurrentWeapon ().currentClipSize != 0) { //can only if you have
+			if (!preventWeaponSwitch) { //can't switch weapons or shoot while throwing a grenade
+				if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
+					if (Input.GetMouseButtonDown (0)) {
+						// Automatic weapon will repeat shooting according firerate
+						InvokeRepeating ("Shoot", 0f, GetCurrentWeapon ().Cooldown); 
+					} else if (Input.GetMouseButtonUp (0)) {
+						// Stop invoking Shoot
+						CancelInvoke ("Shoot");  
+					}
+				} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
+					if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+						StartCoroutine (ThrowGrenade ());
+					}
+				} else if (!GetCurrentWeapon ().IsAutomatic) { //Non-automatic weapon
+					if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+						Shoot ();
+					}
 				}
 			}
 		}
@@ -160,6 +162,7 @@ public class WeaponController : NetworkBehaviour {
 	 * Switch weapons based on middle mouse scroll value
 	 */ 
 	private void SwitchWeapon(float delta) {
+		Debug.Log ("num weapons: " + weapons.Count);
 		if (!preventWeaponSwitch) {
 			int newWeaponSlot = currentWeaponSlot;
 
@@ -254,6 +257,8 @@ public class WeaponController : NetworkBehaviour {
 			} else {
 				// Send deformation to server
 				GetComponent<TerrainController> ().CmdDeform (hitPosition, GetCurrentWeapon ().DeformationRadius);
+				// Send hit location to server for particle system
+				GetComponent<TerrainController>().CmdTerrainParticles(hitPosition, -transform.forward);
 			}
 		}
 

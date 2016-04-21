@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 public class TerrainController : NetworkBehaviour {
 
+	[SerializeField] private ParticleSystem hitEffect = null;
+
 	public Camera playerCamera;
 	public LayerMask layerMask;
 	public CustomNetworkManager networkManager; // dont initialize
@@ -73,5 +75,18 @@ public class TerrainController : NetworkBehaviour {
 			return;
 
 		terrainManager.Deform (new Deformation(position, type, radius));
+	}
+
+	[Command]
+	public void CmdTerrainParticles(Vector3 position, Vector3 hitDirection) {
+		networkManager.SendParticleInfo (position, hitDirection);
+	}
+
+	[ClientRpc]
+	public void RpcTerrainParticles(Vector3 position, Vector3 hitDirection) {
+		if (!isLocalPlayer)
+			return;
+
+		Destroy (Instantiate (hitEffect, position, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as GameObject, hitEffect.startLifetime);
 	}
 }

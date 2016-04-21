@@ -201,6 +201,12 @@ public class CustomNetworkManager : NetworkManager {
 		}
 	}
 
+	public void SendParticleInfo(Vector3 position, Vector3 hitDirection) {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<TerrainController> ().RpcTerrainParticles (position, hitDirection);
+		}
+	}
+
 		/* * * * * * * * * * * * * * * * * 
 		 * Player Messages
 		 * * * * * * * * * * * * * * * * */
