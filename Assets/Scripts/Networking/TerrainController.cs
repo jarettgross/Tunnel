@@ -87,6 +87,14 @@ public class TerrainController : NetworkBehaviour {
 		if (!isLocalPlayer)
 			return;
 
-		Destroy (Instantiate (hitEffect, position, Quaternion.FromToRotation(Vector3.forward, hitDirection)) as GameObject, hitEffect.startLifetime);
+		Instantiate (hitEffect, position, Quaternion.FromToRotation (Vector3.forward, hitDirection));
+		DestroyTerrainParticles ();
+	}
+
+	private void DestroyTerrainParticles() {
+		GameObject[] terrainParticleSystems = GameObject.FindGameObjectsWithTag ("TerrainParticles");
+		foreach (GameObject tps in terrainParticleSystems) {
+			Destroy (tps, tps.GetComponent<ParticleSystem>().startLifetime);
+		}
 	}
 }

@@ -259,7 +259,7 @@ public class WeaponController : NetworkBehaviour {
 				GetComponent<TerrainController> ().CmdDeform (hitPosition, GetCurrentWeapon ().DeformationRadius);
 				// Send hit location to server for particle system
 				GetComponent<TerrainController>().CmdTerrainParticles(hitPosition, -transform.forward);
-				Destroy(GameObject.Find ("TerrainParticles(Clone)"), GetComponent<TerrainController>().hitEffect.startLifetime);
+				//Destroy(GameObject.Find ("TerrainParticles(Clone)"), GetComponent<TerrainController>().hitEffect.startLifetime);
 			}
 		}
 
