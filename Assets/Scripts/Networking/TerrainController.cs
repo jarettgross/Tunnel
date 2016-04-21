@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 public class TerrainController : NetworkBehaviour {
 
-	[SerializeField] private ParticleSystem hitEffect = null;
+	public ParticleSystem hitEffect = null;
 
 	public Camera playerCamera;
 	public LayerMask layerMask;
