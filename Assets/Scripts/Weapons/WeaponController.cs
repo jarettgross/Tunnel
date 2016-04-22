@@ -304,6 +304,8 @@ public class WeaponController : NetworkBehaviour {
 		}
 		GetComponent<TerrainController> ().CmdDeform (grenade.transform.position, grenade.DeformationRadius);
 		GetComponent<ExtraWeaponController>().CmdGrenadeParticles(grenade.transform.position, transform.up);
+		GetComponent<SoundController> ().PlayClip (grenade.GetComponent<Grenade> ().grenadeExplosionSound);
+
 		Destroy (currentWeapon.GetComponent<Grenade> ().gameObject.GetComponent<Rigidbody> ());
 		grenade.transform.SetParent(weaponHolder, false);
 		currentWeapon.transform.position = weaponHolder.position;
