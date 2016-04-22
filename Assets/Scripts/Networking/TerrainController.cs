@@ -17,6 +17,8 @@ public class TerrainController : NetworkBehaviour {
 	private float readyTime = 0.0f;
 	private bool[] moveTime = new bool[3];
 
+	public GameObject pickupBox;
+
 	public override void OnStartLocalPlayer() {
 		layerMask = ~layerMask;
 		networkManager = gameObject.GetComponent<CustomNetworkManager> ();
@@ -34,6 +36,8 @@ public class TerrainController : NetworkBehaviour {
 		gameObject.transform.position = new Vector3 (5, 20, 5);
 		ready = true;
 		readyTime = Time.time;
+
+		CmdSpawnPickupBox ();
 	}
 
 
@@ -96,5 +100,15 @@ public class TerrainController : NetworkBehaviour {
 		foreach (GameObject tps in terrainParticleSystems) {
 			Destroy (tps, tps.GetComponent<ParticleSystem>().startLifetime);
 		}
+	}
+
+	[Command]
+	public void CmdSpawnPickupBox() {
+		networkManager.SendPickupInfo ();
+	}
+
+	[ClientRpc]
+	public void RpcSpawnPickupBox(Vector3 pos) {
+		Instantiate (pickupBox, pos, Quaternion.identity);
 	}
 }

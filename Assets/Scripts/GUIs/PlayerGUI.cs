@@ -6,10 +6,10 @@ using UnityEngine.Networking;
 public class PlayerGUI : NetworkBehaviour {
 
 	//PLAYER HEALTH INFO
-	private float hitPoints;
+	public float hitPoints;
 
 	[SyncVar]
-	private float currentHealth;
+	public float currentHealth;
 
 	//*****************************
 

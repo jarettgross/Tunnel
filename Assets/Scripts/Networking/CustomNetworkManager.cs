@@ -39,7 +39,23 @@ public class CustomNetworkManager : NetworkManager {
 	}
 
 	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId) {
-		GameObject player = (GameObject)Instantiate(playerPrefab, new Vector3 (5, 20, 5), Quaternion.identity);
+		Vector3 startPosition = new Vector3(5, 20, 5); //default
+
+		//**************************************
+		//*ADD IN LATER -- MULTIPLE SPAWN POINTS
+		//**************************************
+//		if (players.Count == 0) {
+//			startPosition = new Vector3 (5, 20, 5);
+//		} else if (players.Count == 1) {
+//			startPosition = new Vector3 (5, 20, 75);
+//		} else if (players.Count == 2) {
+//			startPosition = new Vector3 (75, 20, 5);
+//		} else {
+//			startPosition = new Vector3 (75, 20, 75);
+//		}
+
+
+		GameObject player = (GameObject)Instantiate(playerPrefab, startPosition, Quaternion.identity);
 		player.GetComponent<TerrainController> ().networkManager = this;
 		player.GetComponent<SceneController> ().networkManager = this;
 		player.GetComponent<ExtraWeaponController> ().networkManager = this;
@@ -211,6 +227,13 @@ public class CustomNetworkManager : NetworkManager {
 	public void SendGrenadeParticleInfo(Vector3 pos, Vector3 dir) {
 		foreach (GameObject player in players.Keys) {
 			player.GetComponent<ExtraWeaponController> ().RpcGrenadeParticles (pos, dir);
+		}
+	}
+
+	public void SendPickupInfo() {
+		Vector3 pickupPos = new Vector3 (Random.Range (5, 75), Random.Range (2, 20), Random.Range (5, 75));
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<TerrainController> ().RpcSpawnPickupBox(pickupPos);
 		}
 	}
 
