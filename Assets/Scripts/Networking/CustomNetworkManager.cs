@@ -42,6 +42,7 @@ public class CustomNetworkManager : NetworkManager {
 		GameObject player = (GameObject)Instantiate(playerPrefab, new Vector3 (5, 20, 5), Quaternion.identity);
 		player.GetComponent<TerrainController> ().networkManager = this;
 		player.GetComponent<SceneController> ().networkManager = this;
+		player.GetComponent<ExtraWeaponController> ().networkManager = this;
 
 		NetworkServer.AddPlayerForConnection(conn, player, playerControllerId);
 
@@ -204,6 +205,12 @@ public class CustomNetworkManager : NetworkManager {
 	public void SendParticleInfo(Vector3 position, Vector3 hitDirection) {
 		foreach (GameObject player in players.Keys) {
 			player.GetComponent<TerrainController> ().RpcTerrainParticles (position, hitDirection);
+		}
+	}
+
+	public void SendGrenadeParticleInfo(Vector3 pos, Vector3 dir) {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<ExtraWeaponController> ().RpcGrenadeParticles (pos, dir);
 		}
 	}
 

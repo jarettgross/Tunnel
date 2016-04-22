@@ -259,7 +259,6 @@ public class WeaponController : NetworkBehaviour {
 				GetComponent<TerrainController> ().CmdDeform (hitPosition, GetCurrentWeapon ().DeformationRadius);
 				// Send hit location to server for particle system
 				GetComponent<TerrainController>().CmdTerrainParticles(hitPosition, -transform.forward);
-				//Destroy(GameObject.Find ("TerrainParticles(Clone)"), GetComponent<TerrainController>().hitEffect.startLifetime);
 			}
 		}
 
@@ -304,7 +303,7 @@ public class WeaponController : NetworkBehaviour {
 			}
 		}
 		GetComponent<TerrainController> ().CmdDeform (grenade.transform.position, grenade.DeformationRadius);
-
+		GetComponent<ExtraWeaponController>().CmdGrenadeParticles(grenade.transform.position, transform.up);
 		Destroy (currentWeapon.GetComponent<Grenade> ().gameObject.GetComponent<Rigidbody> ());
 		grenade.transform.SetParent(weaponHolder, false);
 		currentWeapon.transform.position = weaponHolder.position;
