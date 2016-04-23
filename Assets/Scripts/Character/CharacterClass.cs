@@ -1,18 +1,19 @@
 ﻿using UnityEngine;
+using UnityEngine.Networking;
 using System.Collections;
 using System.Collections.Generic;
 
-public class CharacterClass : MonoBehaviour {
+public class CharacterClass : NetworkBehaviour {
 
 	// Default pistol
 	[SerializeField]
-	protected WeaponBase defaultWeapon;
+	protected GameObject defaultWeapon;
 
 	[SerializeField] // Only set this in a character class prefab
-	protected WeaponBase classWeapon1;
+	protected GameObject classWeapon1;
 
 	[SerializeField] // Only set this in a character class prefab
-	protected WeaponBase classWeapon2;
+	protected GameObject classWeapon2;
 
 	[SerializeField]
 	protected float healthPoints;
@@ -25,6 +26,8 @@ public class CharacterClass : MonoBehaviour {
 
 	public string className;
 
+	public int classIndex;
+
 
 	public void Initialize(CharacterClass other) {
 		defaultWeapon = other.defaultWeapon;
@@ -33,31 +36,23 @@ public class CharacterClass : MonoBehaviour {
 		healthPoints = other.healthPoints;
 		walkSpeed = other.walkSpeed;
 		runSpeed = other.runSpeed;
+		className = other.className;
+		classIndex = other.classIndex;
 	}
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
-
-	public WeaponBase DefaultWeapon {
+	public GameObject DefaultWeapon {
 		get {
 			return defaultWeapon;
 		}
 	}
 
-	public WeaponBase ClassWeapon1 {
+	public GameObject ClassWeapon1 {
 		get { 
 			return classWeapon1;
 		}
 	}
 
-	public WeaponBase ClassWeapon2 {
+	public GameObject ClassWeapon2 {
 		get {
 			return classWeapon2;
 		}

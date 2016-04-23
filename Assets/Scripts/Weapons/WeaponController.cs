@@ -6,11 +6,11 @@ using System.Collections;
 [RequireComponent(typeof(SoundController))]
 public class WeaponController : NetworkBehaviour {
 
-	// Temporary starting weapon
-	public GameObject tempStarterWeapon;
-
-	// Temporary secondary weapons
-	public GameObject tempSecondaryWeapon;
+//	// Temporary starting weapon
+//	public GameObject tempStarterWeapon;
+//
+//	// Temporary secondary weapons
+//	public GameObject tempSecondaryWeapon;
 
 	/* * * * * * * * * * * * * * * * * * * * */
 
@@ -68,8 +68,10 @@ public class WeaponController : NetworkBehaviour {
 	 */ 
 	public void Initialize() {
 		characterClass = GetComponent<CharacterClass>();
+//		tempStarterWeapon = characterClass.DefaultWeapon.gameObject;
+//		tempSecondaryWeapon = characterClass.ClassWeapon1.gameObject;
 
-		CmdInitialize(characterClass.DefaultWeapon.gameObject, characterClass.ClassWeapon1.gameObject, characterClass.ClassWeapon2.gameObject);
+		CmdInitialize(characterClass.classIndex);
 	}
 
     /*
@@ -100,48 +102,49 @@ public class WeaponController : NetworkBehaviour {
 
 		if (currentWeapon == null)
 			return;
-		if (GetCurrentWeapon ().currentClipSize != 0) { //can only if you have
-			if (!preventWeaponSwitch) { //can't switch weapons or shoot while throwing a grenade
-				if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
-					if (Input.GetMouseButtonDown (0)) {
-						// Automatic weapon will repeat shooting according firerate
-						if (GetComponent<PlayerController> ().isInvisible) {
-							GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
-						}
-						GetComponent<PlayerController>().isInvisible = false;
-						GetComponent<PlayerController> ().isCooldown = true;
-						GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
+			if (GetCurrentWeapon ().currentClipSize != 0) { //can only if you have
+				if (!preventWeaponSwitch) { //can't switch weapons or shoot while throwing a grenade
+					if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
+						if (Input.GetMouseButtonDown (0)) {
+							// Automatic weapon will repeat shooting according firerate
+							if (GetComponent<PlayerController> ().isInvisible) {
+								GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
+							}
+							GetComponent<PlayerController>().isInvisible = false;
+							GetComponent<PlayerController> ().isCooldown = true;
+							GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
 
-						InvokeRepeating ("Shoot", 0f, GetCurrentWeapon ().Cooldown); 
-					} else if (Input.GetMouseButtonUp (0)) {
-						// Stop invoking Shoot
-						CancelInvoke ("Shoot");  
-					}
-				} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
-					if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
-						if (GetComponent<PlayerController> ().isInvisible) {
-							GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
+							InvokeRepeating ("Shoot", 0f, GetCurrentWeapon ().Cooldown); 
+						} else if (Input.GetMouseButtonUp (0)) {
+							// Stop invoking Shoot
+							CancelInvoke ("Shoot");  
 						}
-						GetComponent<PlayerController>().isInvisible = false;
-						GetComponent<PlayerController> ().isCooldown = true;
-						GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
+					} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
+						if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+							if (GetComponent<PlayerController> ().isInvisible) {
+								GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
+							}
+							GetComponent<PlayerController>().isInvisible = false;
+							GetComponent<PlayerController> ().isCooldown = true;
+							GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
 
-						StartCoroutine (ThrowGrenade ());
-					}
-				} else if (!GetCurrentWeapon ().IsAutomatic) { //Non-automatic weapon
-					if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
-						if (GetComponent<PlayerController> ().isInvisible) {
-							GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
+							StartCoroutine (ThrowGrenade ());
 						}
-						GetComponent<PlayerController>().isInvisible = false;
-						GetComponent<PlayerController> ().isCooldown = true;
-						GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
+					} else if (!GetCurrentWeapon ().IsAutomatic) { //Non-automatic weapon
+						if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+							if (GetComponent<PlayerController> ().isInvisible) {
+								GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
+							}
+							GetComponent<PlayerController>().isInvisible = false;
+							GetComponent<PlayerController> ().isCooldown = true;
+							GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
 
-						Shoot ();
+							Shoot ();
+						}
 					}
 				}
 			}
-		}
+
 
 		// Handle weapon switching with middle mouse scroll
 		float delta = 0;
@@ -210,15 +213,20 @@ public class WeaponController : NetworkBehaviour {
 	}
 
 	[Command]
-	private void CmdInitialize(GameObject _defaultWeapon, GameObject _classWeapon1, GameObject _classWeapon2) {
+	private void CmdInitialize(int classIndex) {
+
+		CharacterClass cc = GameObject.Find("Characters").GetComponent<CharacterContainer>().GetClass(classIndex).GetComponent<CharacterClass>();
 
 		// Temporary
-		GameObject defaultWeapon = (GameObject)Instantiate(tempStarterWeapon, Vector3.zero, Quaternion.identity);
-		GameObject classWeapon1 = (GameObject)Instantiate(tempSecondaryWeapon, Vector3.zero, Quaternion.identity);
+		GameObject defaultWeapon = (GameObject)Instantiate(cc.DefaultWeapon, Vector3.zero, Quaternion.identity);
+		GameObject classWeapon1 = (GameObject)Instantiate(cc.ClassWeapon1, Vector3.zero, Quaternion.identity);
 		//GameObject classWeapon2 = (GameObject)Instantiate(_classWeapon2, Vector3.zero, Quaternion.identity);
+
+
 
 		NetworkServer.SpawnWithClientAuthority(defaultWeapon, connectionToClient);
 		NetworkServer.SpawnWithClientAuthority(classWeapon1, connectionToClient);
+
 		//NetworkServer.SpawnWithClientAuthority(classWeapon2, connectionToClient);
 
 		RpcInitialize(defaultWeapon, classWeapon1);
@@ -277,7 +285,7 @@ public class WeaponController : NetworkBehaviour {
 			} else {
 				// Send deformation to server
 				GetComponent<TerrainController> ().CmdDeform (hitPosition, GetCurrentWeapon ().DeformationRadius);
-				// Send hit location to server for particle system
+
 				GetComponent<TerrainController>().CmdTerrainParticles(hitPosition, -transform.forward);
 			}
 		}
@@ -323,8 +331,6 @@ public class WeaponController : NetworkBehaviour {
 			}
 		}
 		GetComponent<TerrainController> ().CmdDeform (grenade.transform.position, grenade.DeformationRadius);
-		GetComponent<ExtraWeaponController>().CmdGrenadeParticles(grenade.transform.position, transform.up);
-		GetComponent<SoundController> ().PlayClip (grenade.GetComponent<Grenade> ().grenadeExplosionSound);
 
 		Destroy (currentWeapon.GetComponent<Grenade> ().gameObject.GetComponent<Rigidbody> ());
 		grenade.transform.SetParent(weaponHolder, false);
@@ -353,6 +359,6 @@ public class WeaponController : NetworkBehaviour {
 		
 	private void PlayerDied(GameObject player) {
 		Debug.Log("Player " + player + " died");
-		//player.transform.position = new Vector3(5, 20, 5);
+		player.transform.position = new Vector3(5, 20, 5);
 	}
 }

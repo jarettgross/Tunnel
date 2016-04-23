@@ -111,7 +111,9 @@ public class CharacterSelector : MonoBehaviour {
 			readyButton.image.color = Color.green;
             startGameButton.gameObject.SetActive(true);
 			GameObject currentClass = characters [listIndex]; //gets character class based on chosen prefab on select screen
-			GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady (currentClass);
+			int classIndex = currentClass.GetComponent<CharacterClass>().classIndex;
+			//GameObject currentClass = GameObject.Find("Characters").GetComponent<CharacterContainer>().GetClass(listIndex);
+			GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionScreenReady (classIndex);
 		} else {
 			readyButton.image.color = Color.red;
             startGameButton.gameObject.SetActive(false);

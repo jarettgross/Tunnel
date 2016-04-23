@@ -16,6 +16,8 @@ public class CustomNetworkManager : NetworkManager {
 	// The scene clients should display first
 	private PlayerState[] playerStates;
 
+	private bool terrainSpawned;
+
 	enum PlayerState {
 		NOT_CONNECTED,
 		CONNECTED,
@@ -32,6 +34,7 @@ public class CustomNetworkManager : NetworkManager {
 		for (int i = 0; i < requiredPlayers; i++) {
 			playerStates[i] = PlayerState.NOT_CONNECTED;
 		}
+		terrainSpawned = false;
 	}
 
 	override public void OnServerConnect(NetworkConnection conn) {
@@ -205,8 +208,11 @@ public class CustomNetworkManager : NetworkManager {
 	 * Spawns terrain on the clients
 	 */ 
 	public void SpawnTerrain() {
-		GameObject terrainManager = (GameObject)Instantiate(terrainManagerPrefab, Vector3.zero, Quaternion.identity);
-		NetworkServer.Spawn(terrainManager);
+		if (!terrainSpawned) {
+			GameObject terrainManager = (GameObject)Instantiate(terrainManagerPrefab, Vector3.zero, Quaternion.identity);
+			NetworkServer.Spawn(terrainManager);
+			terrainSpawned = true;
+		}
 	}
 
 	/*

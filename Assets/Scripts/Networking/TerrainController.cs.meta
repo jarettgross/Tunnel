@@ -1,10 +1,14 @@
 fileFormatVersion: 2
 guid: 3acba9eaf3438482e809c33099461ca0
-timeCreated: 1457316320
+timeCreated: 1461383357
 licenseType: Free
 MonoImporter:
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - hitEffect: {instanceID: 0}
+  - playerCamera: {instanceID: 0}
+  - networkManager: {instanceID: 0}
+  - pickupBox: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -10,8 +10,6 @@ public class SceneController : NetworkBehaviour {
 	private const int characterSelectionMenueSceneId = 1;
 	private const int worldSceneId = 2;
 
-	private CharacterClass characterClass;
-
 	public override void OnStartLocalPlayer() {
 		DontDestroyOnLoad (gameObject);
 		LoadCharacterSelectionScreen ();
@@ -36,9 +34,20 @@ public class SceneController : NetworkBehaviour {
 		SceneManager.LoadScene (characterSelectionMenueSceneId);
 	}
 
-	public void CharacterSelectionScreenReady(GameObject _characterClass) {
-		characterClass = _characterClass.GetComponent<CharacterClass>();
+	public void CharacterSelectionScreenReady(int classIndex) {
+		Debug.Log("Character Ready with class " + classIndex);
+		GameObject characters = GameObject.Find("Characters");
+		CharacterContainer container = characters.GetComponent<CharacterContainer>();
+		GameObject co = container.GetClass(classIndex);
+		CharacterClass cc = co.GetComponent<CharacterClass>();
+		GetComponent<CharacterClass>().Initialize(cc);
+		CmdUpdateClass(classIndex);
 		CmdCharacterReady ();
+	}
+
+	[Command]
+	public void CmdUpdateClass(int classIndex) {
+		GetComponent<CharacterClass>().Initialize(GameObject.Find("Characters").GetComponent<CharacterContainer>().GetClass(classIndex).GetComponent<CharacterClass>());
 	}
 
 	public void CharacterSelectionScreenNotReady() {
@@ -89,9 +98,6 @@ public class SceneController : NetworkBehaviour {
 	public void ReadyPlayer() {
 		if (!isLocalPlayer)
 			return;
-
-		CharacterClass cc = gameObject.AddComponent<CharacterClass>();
-		cc.Initialize(characterClass);
 
 		gameObject.GetComponent<PlayerSetup>().EnableComponents ();
 		gameObject.GetComponent<TerrainController>().Initialize();

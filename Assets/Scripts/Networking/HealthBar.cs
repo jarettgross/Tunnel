@@ -38,7 +38,7 @@ public class HealthBar : NetworkBehaviour {
 		playerHUD.transform.SetParent (transform.parent);
 		slider = playerHUD.GetComponentInChildren<Slider>();
 		textInfo = playerHUD.GetComponentsInChildren<Text> ();
-		currentWeapon = GetComponent<WeaponController> ().tempStarterWeapon;
+		//currentWeapon = GetComponent<WeaponController>().GetCurrentWeapon().gameObject;
 
 		foreach (Text text in textInfo) {
 			if (text.name == "ClipCounter") {
@@ -81,15 +81,17 @@ public class HealthBar : NetworkBehaviour {
         healthRatio = hasHealth.HealthRatio();
         slider.value = healthRatio;
 
-		WeaponBase wb = currentWeapon.GetComponent<WeaponBase> ();
-		string[] weaponName = currentWeapon.name.Split('_');
-		weaponInfo.text = wb.currentClipSize + "/" + wb.ClipSize + "\n" + weaponName[0];
-		fuelInfo.text = "Fuel" + "\n" + Mathf.Round(GetComponent<PlayerController> ().fuelAmount) + "/" + GetComponent<PlayerController> ().originalFuelAmount;
+		if (currentWeapon != null) {
+			WeaponBase wb = currentWeapon.GetComponent<WeaponBase>();
+			string[] weaponName = currentWeapon.name.Split('_');
+			weaponInfo.text = wb.currentClipSize + "/" + wb.ClipSize + "\n" + weaponName[0];
+			fuelInfo.text = "Fuel" + "\n" + Mathf.Round(GetComponent<PlayerController>().fuelAmount) + "/" + GetComponent<PlayerController>().originalFuelAmount;
 	
-		string invisible = GetComponent<PlayerController> ().isInvisible ? "Invisible" : "Visible";
-		string cooldown = GetComponent<PlayerController> ().isCooldown ? "Cooldown" : "Ready";
+			string invisible = GetComponent<PlayerController>().isInvisible ? "Invisible" : "Visible";
+			string cooldown = GetComponent<PlayerController>().isCooldown ? "Cooldown" : "Ready";
 
-		specialAbilityInfo.text = invisible + "\n" + Mathf.Round (GetComponent<PlayerController> ().invisibilityRemaining) + "/20" + "\n" + cooldown;
+			specialAbilityInfo.text = invisible + "\n" + Mathf.Round(GetComponent<PlayerController>().invisibilityRemaining) + "/20" + "\n" + cooldown;
+		}
 	}
 
 	public void SetCurrentWeapon(GameObject weapon) {
