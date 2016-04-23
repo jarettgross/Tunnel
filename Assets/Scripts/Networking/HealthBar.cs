@@ -64,8 +64,8 @@ public class HealthBar : NetworkBehaviour {
 			isChangingAlphaUp = true;
 			isDamaged = true;
 		}
-		slider.value = hasHealth.HealthRatio();
-		healthRatio = hasHealth.HealthRatio();
+        healthRatio = hasHealth.HealthRatio();
+        slider.value = healthRatio;
 
 		WeaponBase wb = currentWeapon.GetComponent<WeaponBase> ();
 		string[] weaponName = currentWeapon.name.Split('_');

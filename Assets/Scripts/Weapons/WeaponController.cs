@@ -333,6 +333,6 @@ public class WeaponController : NetworkBehaviour {
 		
 	private void PlayerDied(GameObject player) {
 		Debug.Log("Player " + player + " died");
-		player.transform.position = new Vector3(5, 20, 5);
+		//player.transform.position = new Vector3(5, 20, 5);
 	}
 }

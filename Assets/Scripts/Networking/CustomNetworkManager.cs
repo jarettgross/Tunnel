@@ -244,7 +244,7 @@ public class CustomNetworkManager : NetworkManager {
 	/*
 	 * Called when a player has died
 	 */
-	public void PlayerDied(GameObject player) {
-		player.transform.position = new Vector3(5, 20, 5);
-	}
+	//public void PlayerDied(GameObject player) {
+	//	player.transform.position = new Vector3(5, 20, 5);
+	//}
 }

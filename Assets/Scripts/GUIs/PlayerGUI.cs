@@ -3,6 +3,8 @@ using System.Collections;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
+// FIXME this should be renamed to HealthController or something
+
 public class PlayerGUI : NetworkBehaviour {
 
 	//PLAYER HEALTH INFO
@@ -11,23 +13,39 @@ public class PlayerGUI : NetworkBehaviour {
 	[SyncVar]
 	public float currentHealth;
 
+    // player death stuff
+    private float deathTime;
+    private bool isDead;
+    private const float RESPAWN_TIME = 5.0f;
+    [SyncVar]
+    private int spawnIndex;
+
+    private const int NUM_SPAWNS = 2;
+    private Vector3[] spawns;
+
 	//*****************************
 
 	void Awake() {
 		hitPoints = 100;
 		currentHealth = hitPoints;
-	}
+        isDead = false;
+        // FIXME better spawns
+        spawns = new Vector3[NUM_SPAWNS];
+        spawns[0] = new Vector3(10, 30, 10);
+        spawns[1] = new Vector3(70, 30, 70);
+        spawnIndex = 0;
+    }
 
 	//Need to initialize after awake so that player can get characterClass's healthPoints value
 	public void Initialize() {
 		hitPoints = gameObject.GetComponent<CharacterClass> ().HealthPoints;
 		currentHealth = hitPoints;
-	}
+    }
 
 	public bool ReceiveDamage(float damageAmount) {
 		currentHealth -= damageAmount;
 		if (currentHealth <= 0) {
-			Destroy (gameObject);
+            PlayerDied();
 			return true;
 		}
 		Debug.Log("Took damage. Health now: " + currentHealth);
@@ -37,4 +55,76 @@ public class PlayerGUI : NetworkBehaviour {
 	public float HealthRatio() {
 		return currentHealth / hitPoints;
 	}
+
+    private void PlayerDied()
+    {
+        deathTime = Time.time;
+        isDead = true;
+        Debug.Log("Player died: " + deathTime);
+        RpcPlayerDied();
+    }
+
+    [ClientRpc]
+    private void RpcPlayerDied()
+    {
+        gameObject.GetComponent<MeshRenderer>().enabled = false;
+        gameObject.GetComponent<CapsuleCollider>().enabled = false;
+        gameObject.GetComponent<CharacterController>().enabled = false;
+        if (isLocalPlayer)
+        {
+            gameObject.GetComponent<PlayerController>().enabled = false;
+            gameObject.GetComponent<SimpleSmoothMouseLook>().enabled = false;
+            gameObject.GetComponent<ActionController>().enabled = false;
+        }
+        foreach (Transform child in transform)
+        {
+            foreach (Transform child2 in child)
+            {
+                child2.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private void PlayerRespawn()
+    {
+        currentHealth = hitPoints;
+        isDead = false;
+        Debug.Log("Respawning Player (server): " + Time.time);
+        spawnIndex = Random.Range(0, 2);
+        RpcPlayerRespawn();
+    }
+
+    [ClientRpc]
+    private void RpcPlayerRespawn()
+    {
+        Debug.Log("Respawning Player (client)");
+        gameObject.transform.position = spawns[spawnIndex];
+        gameObject.GetComponent<MeshRenderer>().enabled = true;
+        gameObject.GetComponent<CapsuleCollider>().enabled = true;
+        gameObject.GetComponent<CharacterController>().enabled = true;
+        if (isLocalPlayer)
+        {
+            gameObject.GetComponent<PlayerController>().enabled = true;
+            gameObject.GetComponent<SimpleSmoothMouseLook>().enabled = true;
+            gameObject.GetComponent<ActionController>().enabled = true;
+        }
+        foreach (Transform child in transform)
+        {
+            foreach (Transform child2 in child)
+            {
+                child2.gameObject.SetActive(true);
+            }
+        }
+    }
+
+    void Update()
+    {
+        if (isDead)
+        {
+            if (Time.time - deathTime > RESPAWN_TIME)
+            {
+                PlayerRespawn();
+            }
+        }
+    }
 }
