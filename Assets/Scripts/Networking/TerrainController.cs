@@ -33,7 +33,8 @@ public class TerrainController : NetworkBehaviour {
 		
 		Debug.Log ("Displaying World");
 		terrainManager = tm.GetComponent<TerrainManager> ();
-		gameObject.transform.position = new Vector3 (5, 20, 5);
+        // spawn is handled by CustomNetworkManager
+		//gameObject.transform.position = new Vector3 (5, 20, 5);
 		ready = true;
 		readyTime = Time.time;
 

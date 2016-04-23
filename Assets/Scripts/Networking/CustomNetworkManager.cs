@@ -18,6 +18,10 @@ public class CustomNetworkManager : NetworkManager {
 
 	private bool terrainSpawned;
 
+	// player spawns
+    private const int NUM_SPAWNS = 4;
+    private Vector3[] spawns;
+
 	enum PlayerState {
 		NOT_CONNECTED,
 		CONNECTED,
@@ -35,6 +39,13 @@ public class CustomNetworkManager : NetworkManager {
 			playerStates[i] = PlayerState.NOT_CONNECTED;
 		}
 		terrainSpawned = false;
+		
+        // FIXME better spawns
+        spawns = new Vector3[NUM_SPAWNS];
+        spawns[0] = new Vector3(5, 20, 5);
+        spawns[1] = new Vector3(75, 20, 75);
+        spawns[2] = new Vector3(5, 20, 75);
+        spawns[3] = new Vector3(75, 20, 5);
 	}
 
 	override public void OnServerConnect(NetworkConnection conn) {
@@ -42,21 +53,14 @@ public class CustomNetworkManager : NetworkManager {
 	}
 
 	public override void OnServerAddPlayer(NetworkConnection conn, short playerControllerId) {
-		Vector3 startPosition = new Vector3(5, 20, 5); //default
+        int id = GetNextId();
+        if (id == -1)
+        {
+            Debug.LogError("Game already full, too many players");
+        }
 
-		//**************************************
-		//*ADD IN LATER -- MULTIPLE SPAWN POINTS
-		//**************************************
-//		if (players.Count == 0) {
-//			startPosition = new Vector3 (5, 20, 5);
-//		} else if (players.Count == 1) {
-//			startPosition = new Vector3 (5, 20, 75);
-//		} else if (players.Count == 2) {
-//			startPosition = new Vector3 (75, 20, 5);
-//		} else {
-//			startPosition = new Vector3 (75, 20, 75);
-//		}
-
+        // set spawn position
+        Vector3 startPosition = spawns[id % NUM_SPAWNS];
 
 		GameObject player = (GameObject)Instantiate(playerPrefab, startPosition, Quaternion.identity);
 		player.GetComponent<TerrainController> ().networkManager = this;
@@ -67,11 +71,6 @@ public class CustomNetworkManager : NetworkManager {
 
 		// Alert new player of existing players
 		RegisterPlayers(player);
-
-		int id = GetNextId();
-		if (id == -1) {
-			Debug.LogError("Game already full, too many players");
-		}
 
 		players.Add(player, id);
         connections.Add(conn, player);

@@ -20,7 +20,7 @@ public class PlayerGUI : NetworkBehaviour {
     [SyncVar]
     private int spawnIndex;
 
-    private const int NUM_SPAWNS = 2;
+    private const int NUM_SPAWNS = 4;
     private Vector3[] spawns;
 
 	//*****************************
@@ -30,9 +30,12 @@ public class PlayerGUI : NetworkBehaviour {
 		currentHealth = hitPoints;
         isDead = false;
         // FIXME better spawns
+        // FIXME duplicated code in CustomNetworkManager
         spawns = new Vector3[NUM_SPAWNS];
-        spawns[0] = new Vector3(10, 30, 10);
-        spawns[1] = new Vector3(70, 30, 70);
+        spawns[0] = new Vector3(5, 20, 5);
+        spawns[1] = new Vector3(75, 20, 75);
+        spawns[2] = new Vector3(5, 20, 75);
+        spawns[3] = new Vector3(75, 20, 5);
         spawnIndex = 0;
     }
 
