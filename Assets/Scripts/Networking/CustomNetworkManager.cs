@@ -237,6 +237,7 @@ public class CustomNetworkManager : NetworkManager {
 		}
 	}
 
+
 		/* * * * * * * * * * * * * * * * * 
 		 * Player Messages
 		 * * * * * * * * * * * * * * * * */

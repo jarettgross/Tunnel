@@ -30,6 +30,10 @@ public class PlayerController : NetworkBehaviour
     private bool m_Jumping;
     private SoundController m_SoundController;
 
+	private bool isUsingFuel = false;
+	public float originalFuelAmount = 10f;
+	public float fuelAmount = 10f;
+
 	[SerializeField] private ParticleSystem hitEffect = null;
 
     // Use this for initialization
@@ -63,13 +67,13 @@ public class PlayerController : NetworkBehaviour
             m_Jump = CrossPlatformInputManager.GetButtonDown("Jump");
         }
 
-        if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
+		if (!isUsingFuel && !m_PreviouslyGrounded && m_CharacterController.isGrounded)
         {
             PlayLandingSound();
             m_MoveDir.y = 0f;
             m_Jumping = false;
         }
-        if (!m_CharacterController.isGrounded && !m_Jumping && m_PreviouslyGrounded)
+		if (!isUsingFuel && !m_CharacterController.isGrounded && !m_Jumping && m_PreviouslyGrounded)
         {
             m_MoveDir.y = 0f;
         }
@@ -104,12 +108,25 @@ public class PlayerController : NetworkBehaviour
         m_MoveDir.x = desiredMove.x*speed;
         m_MoveDir.z = desiredMove.z*speed;
 
+		if (Input.GetKeyDown (KeyCode.E) && fuelAmount > 0.0f) {
+			isUsingFuel = !isUsingFuel;
+			if (isUsingFuel) {
+				m_MoveDir.y = m_JumpSpeed / 2;
+			}
+		}
 
-        if (m_CharacterController.isGrounded)
+		if (isUsingFuel) {
+			fuelAmount -= Time.fixedDeltaTime;
+			if (fuelAmount <= 0.0f) {
+				isUsingFuel = !isUsingFuel;
+			}
+		}
+
+        if (!isUsingFuel && m_CharacterController.isGrounded)
         {
             m_MoveDir.y = -m_StickToGroundForce;
 
-            if (m_Jump)
+            if (!isUsingFuel && m_Jump)
             {
                 m_MoveDir.y = m_JumpSpeed;
                 PlayJumpSound();
@@ -117,7 +134,7 @@ public class PlayerController : NetworkBehaviour
                 m_Jumping = true;
             }
         }
-        else
+		else if(!isUsingFuel)
         {
             m_MoveDir += Physics.gravity*m_GravityMultiplier*Time.fixedDeltaTime;
         }
@@ -214,11 +231,6 @@ public class PlayerController : NetworkBehaviour
 //			GameObject mineObj = (GameObject)Instantiate (Resources.Load("MineWeapon"), minePos, gameObject.transform.rotation);
 //			mineObj.GetComponent<Mine> ().owner = gameObject;
 //		}
-//	}
-//
-//	private void SetJetpack() {
-//		GameObject jetpackObj = (GameObject)Instantiate (Resources.Load ("Jetpack"), gameObject.transform.position, gameObject.transform.rotation);
-//		jetpackObj.GetComponent<Jetpack> ().owner = gameObject;
 //	}
 
 	//*********************

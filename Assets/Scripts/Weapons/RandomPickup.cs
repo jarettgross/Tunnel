@@ -4,13 +4,25 @@ using System.Collections;
 public class RandomPickup : MonoBehaviour {
 
 	void OnCollisionEnter(Collision collision) {
-		Debug.Log ("collsiion entered");
 		if (collision.gameObject.tag == "Player") {
-			Debug.Log ("giving bonus");
 			if (Random.Range(0, 1) < 0.5) { //give ammo to player
 				collision.gameObject.GetComponent<WeaponController>().GetCurrentWeapon().currentClipSize = collision.gameObject.GetComponent<WeaponController>().GetCurrentWeapon().ClipSize;
+			
+				collision.gameObject.GetComponent<PlayerController> ().fuelAmount += 5;
+				if (collision.gameObject.GetComponent<PlayerController> ().fuelAmount > collision.gameObject.GetComponent<PlayerController> ().originalFuelAmount) {
+					collision.gameObject.GetComponent<PlayerController> ().fuelAmount = collision.gameObject.GetComponent<PlayerController> ().originalFuelAmount;
+				}
+
 			} else { //give health to player
 				collision.gameObject.GetComponent<PlayerGUI>().currentHealth += 30;
+				if (collision.gameObject.GetComponent<PlayerGUI>().currentHealth > collision.gameObject.GetComponent<PlayerGUI>().hitPoints) {
+					collision.gameObject.GetComponent<PlayerGUI> ().currentHealth = collision.gameObject.GetComponent<PlayerGUI> ().hitPoints;
+				}
+
+				collision.gameObject.GetComponent<PlayerController> ().fuelAmount += 5;
+				if (collision.gameObject.GetComponent<PlayerController> ().fuelAmount > collision.gameObject.GetComponent<PlayerController> ().originalFuelAmount) {
+					collision.gameObject.GetComponent<PlayerController> ().fuelAmount = collision.gameObject.GetComponent<PlayerController> ().originalFuelAmount;
+				}
 			}
 			collision.gameObject.GetComponent<TerrainController> ().CmdSpawnPickupBox ();
 			Destroy (gameObject);

@@ -33,6 +33,4 @@ public class ExtraWeaponController : NetworkBehaviour {
 			Destroy (gps, gps.GetComponent<ParticleSystem>().startLifetime);
 		}
 	}
-
-
 }

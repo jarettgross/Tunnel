@@ -9,9 +9,10 @@ public class HealthBar : NetworkBehaviour {
 
 	private GameObject playerHUD;
 	private Slider slider;
-	private Text weaponInfo;
+	private Text[] textInfo;
 
-	public Text clipInfo;
+	private Text weaponInfo;
+	private Text fuelInfo;
 
 	private GameObject currentWeapon;
 
@@ -35,8 +36,17 @@ public class HealthBar : NetworkBehaviour {
 		playerHUD = Instantiate(canvasHUD);
 		playerHUD.transform.SetParent (transform.parent);
 		slider = playerHUD.GetComponentInChildren<Slider>();
-		weaponInfo = playerHUD.GetComponentInChildren<Text> ();
+		textInfo = playerHUD.GetComponentsInChildren<Text> ();
 		currentWeapon = GetComponent<WeaponController> ().tempStarterWeapon;
+
+		foreach (Text text in textInfo) {
+			if (text.name == "ClipCounter") {
+				weaponInfo = text;
+			}
+			if (text.name == "FuelTracker") {
+				fuelInfo = text;
+			}
+		}
 
 		canvasImages = playerHUD.GetComponentsInChildren<Image> ();
 		foreach (Image image in canvasImages) {
@@ -70,6 +80,7 @@ public class HealthBar : NetworkBehaviour {
 		WeaponBase wb = currentWeapon.GetComponent<WeaponBase> ();
 		string[] weaponName = currentWeapon.name.Split('_');
 		weaponInfo.text = wb.currentClipSize + "/" + wb.ClipSize + "\n" + weaponName[0];
+		fuelInfo.text = "Fuel" + "\n" + Mathf.Round(GetComponent<PlayerController> ().fuelAmount) + "/" + GetComponent<PlayerController> ().originalFuelAmount;
 	}
 
 	public void SetCurrentWeapon(GameObject weapon) {
