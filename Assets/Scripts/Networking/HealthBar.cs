@@ -13,6 +13,7 @@ public class HealthBar : NetworkBehaviour {
 
 	private Text weaponInfo;
 	private Text fuelInfo;
+	private Text specialAbilityInfo;
 
 	private GameObject currentWeapon;
 
@@ -45,6 +46,9 @@ public class HealthBar : NetworkBehaviour {
 			}
 			if (text.name == "FuelTracker") {
 				fuelInfo = text;
+			}
+			if (text.name == "SpecialAbility") {
+				specialAbilityInfo = text;
 			}
 		}
 
@@ -81,6 +85,11 @@ public class HealthBar : NetworkBehaviour {
 		string[] weaponName = currentWeapon.name.Split('_');
 		weaponInfo.text = wb.currentClipSize + "/" + wb.ClipSize + "\n" + weaponName[0];
 		fuelInfo.text = "Fuel" + "\n" + Mathf.Round(GetComponent<PlayerController> ().fuelAmount) + "/" + GetComponent<PlayerController> ().originalFuelAmount;
+	
+		string invisible = GetComponent<PlayerController> ().isInvisible ? "Invisible" : "Visible";
+		string cooldown = GetComponent<PlayerController> ().isCooldown ? "Cooldown" : "Ready";
+
+		specialAbilityInfo.text = invisible + "\n" + Mathf.Round (GetComponent<PlayerController> ().invisibilityRemaining) + "/20" + "\n" + cooldown;
 	}
 
 	public void SetCurrentWeapon(GameObject weapon) {

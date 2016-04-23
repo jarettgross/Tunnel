@@ -63,6 +63,18 @@ public class WeaponController : NetworkBehaviour {
         m_SoundController = GetComponent<SoundController>();
     }
 
+	void Update() {
+		if (GetComponent<PlayerController> ().isInvisible) {
+			foreach (WeaponBase wb in weapons) {
+				wb.gameObject.SetActive (false);
+			}
+		} else {
+			foreach (WeaponBase wb in weapons) {
+				wb.gameObject.SetActive (true);
+			}
+		}
+	}
+
 	/*
 	 * Assign the starting weapons of the player
 	 */ 
@@ -102,9 +114,17 @@ public class WeaponController : NetworkBehaviour {
 			return;
 		if (GetCurrentWeapon ().currentClipSize != 0) { //can only if you have
 			if (!preventWeaponSwitch) { //can't switch weapons or shoot while throwing a grenade
+				GetCurrentWeapon().gameObject.SetActive(true);
 				if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
 					if (Input.GetMouseButtonDown (0)) {
 						// Automatic weapon will repeat shooting according firerate
+						if (GetComponent<PlayerController> ().isInvisible) {
+							GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
+						}
+						GetComponent<PlayerController>().isInvisible = false;
+						GetComponent<PlayerController> ().isCooldown = true;
+						GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
+
 						InvokeRepeating ("Shoot", 0f, GetCurrentWeapon ().Cooldown); 
 					} else if (Input.GetMouseButtonUp (0)) {
 						// Stop invoking Shoot
@@ -112,10 +132,24 @@ public class WeaponController : NetworkBehaviour {
 					}
 				} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
 					if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+						if (GetComponent<PlayerController> ().isInvisible) {
+							GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
+						}
+						GetComponent<PlayerController>().isInvisible = false;
+						GetComponent<PlayerController> ().isCooldown = true;
+						GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
+
 						StartCoroutine (ThrowGrenade ());
 					}
 				} else if (!GetCurrentWeapon ().IsAutomatic) { //Non-automatic weapon
 					if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+						if (GetComponent<PlayerController> ().isInvisible) {
+							GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
+						}
+						GetComponent<PlayerController>().isInvisible = false;
+						GetComponent<PlayerController> ().isCooldown = true;
+						GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
+
 						Shoot ();
 					}
 				}

@@ -5,22 +5,14 @@ public class Invisibility : MonoBehaviour {
 
 	public GameObject owner;
 
-	private float invisibilityRemaining; //invisiblity remaining in seconds
-	private bool isInvisible;
+	private float invisibilityRemaining = 20.0f; //invisiblity remaining in seconds
+	private bool isInvisible = false;
 	private bool isChanging; //currently going visible/invisible
 
 	private float currentAlpha; //current transparency of material
 
-	private float lerpTime; 
-	private float lerpScale; //how long it takes to turn invisible
-
-	// Use this for initialization
-	void Start () {
-		invisibilityRemaining = 60.0f;
-		isInvisible = false;
-		lerpTime = 0.0f;
-		lerpScale = 0.7f;
-	}
+	private float lerpTime = 0.0f; 
+	private float lerpScale = 0.7f; //how long it takes to turn invisible
 	
 	// Update is called once per frame
 	void Update () {

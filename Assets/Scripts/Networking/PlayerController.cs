@@ -30,11 +30,21 @@ public class PlayerController : NetworkBehaviour
     private bool m_Jumping;
     private SoundController m_SoundController;
 
+
+	//** Jetpack
 	private bool isUsingFuel = false;
 	public float originalFuelAmount = 10f;
 	public float fuelAmount = 10f;
+	//**
 
-	public int playerUniqueID;
+	//** Invisibility
+	public float invisibilityRemaining = 20.0f; //invisiblity remaining in seconds
+	public bool isInvisible = false;
+	public float invisibleCooldown = -0.5f;
+	public bool isCooldown = false;
+	//**
+
+	[System.NonSerialized] public NetworkInstanceId playerUniqueID; //DO NOT SET
 
 	[SerializeField] private ParticleSystem hitEffect = null;
 
@@ -52,6 +62,8 @@ public class PlayerController : NetworkBehaviour
 		CharacterClass character = GetComponent<CharacterClass>();
 		m_WalkSpeed = character.WalkSpeed;
 		m_RunSpeed = character.RunSpeed;
+
+		playerUniqueID = GetComponent<NetworkIdentity> ().netId;
 	}
 
 	
@@ -81,7 +93,38 @@ public class PlayerController : NetworkBehaviour
         }
 
         m_PreviouslyGrounded = m_CharacterController.isGrounded;
-    }
+
+		//Handle player invisibility
+		if (invisibilityRemaining > 0.0f && Input.GetKeyDown (KeyCode.Q)) {
+			if (invisibleCooldown < 0.1f) {
+
+				isInvisible = !isInvisible;
+				if (isInvisible) {
+					GetComponent<ExtraWeaponController> ().CmdInvisiblity (playerUniqueID, true);
+				} else {
+					GetComponent<ExtraWeaponController> ().CmdInvisiblity (playerUniqueID, false);
+					invisibleCooldown = 5.0f;
+					isCooldown = true;
+				}
+			}
+		}
+
+		if (isCooldown) { 
+			invisibleCooldown -= Time.deltaTime;
+			if (invisibleCooldown < 0.1f) {
+				isCooldown = false;
+			}
+		}
+
+		if (isInvisible) {
+			invisibilityRemaining -= Time.deltaTime;
+		}
+
+		if (invisibilityRemaining <= 0.0f) {
+			isInvisible = false;
+			GetComponent<ExtraWeaponController> ().CmdInvisiblity (playerUniqueID, false);
+		}
+	}
 
     private void PlayLandingSound()
     {
