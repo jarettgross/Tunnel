@@ -84,8 +84,11 @@ public class ExtraWeaponController : NetworkBehaviour {
 			if (player.GetComponent<NetworkIdentity>().netId == id) {
 				if (isInvisible) {
 					player.GetComponent<Renderer> ().enabled = false;
+					Transform temp = player.GetComponent<WeaponController> ().weaponHolder;
+					player.GetComponent<WeaponController> ().weaponHolder.localPosition = new Vector3(temp.position.x, -1000, temp.position.z);
 				} else {
 					player.GetComponent<Renderer> ().enabled = true;
+					player.GetComponent<WeaponController> ().weaponHolder.localPosition = new Vector3(0.341f, -0.3709f, 0.75f);
 				}
 			}
 		}

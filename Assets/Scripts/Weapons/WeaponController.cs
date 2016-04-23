@@ -27,7 +27,7 @@ public class WeaponController : NetworkBehaviour {
 	private const int MAX_WEAPONS = 6; 
 
     [SerializeField] // Where new weapon should spawn
-    private Transform weaponHolder = null;
+    public Transform weaponHolder = null;
 
 	// Currently active weapon slot
 	private int currentWeaponSlot;
@@ -62,18 +62,6 @@ public class WeaponController : NetworkBehaviour {
 
         m_SoundController = GetComponent<SoundController>();
     }
-
-	void Update() {
-		if (GetComponent<PlayerController> ().isInvisible) {
-			foreach (WeaponBase wb in weapons) {
-				wb.gameObject.SetActive (false);
-			}
-		} else {
-			foreach (WeaponBase wb in weapons) {
-				wb.gameObject.SetActive (true);
-			}
-		}
-	}
 
 	/*
 	 * Assign the starting weapons of the player
@@ -114,7 +102,6 @@ public class WeaponController : NetworkBehaviour {
 			return;
 		if (GetCurrentWeapon ().currentClipSize != 0) { //can only if you have
 			if (!preventWeaponSwitch) { //can't switch weapons or shoot while throwing a grenade
-				GetCurrentWeapon().gameObject.SetActive(true);
 				if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
 					if (Input.GetMouseButtonDown (0)) {
 						// Automatic weapon will repeat shooting according firerate
@@ -196,7 +183,6 @@ public class WeaponController : NetworkBehaviour {
 	 * Switch weapons based on middle mouse scroll value
 	 */ 
 	private void SwitchWeapon(float delta) {
-		Debug.Log ("num weapons: " + weapons.Count);
 		if (!preventWeaponSwitch) {
 			int newWeaponSlot = currentWeaponSlot;
 
