@@ -34,6 +34,8 @@ public class PlayerController : NetworkBehaviour
 	public float originalFuelAmount = 10f;
 	public float fuelAmount = 10f;
 
+	public int playerUniqueID;
+
 	[SerializeField] private ParticleSystem hitEffect = null;
 
     // Use this for initialization
@@ -111,14 +113,18 @@ public class PlayerController : NetworkBehaviour
 		if (Input.GetKeyDown (KeyCode.E) && fuelAmount > 0.0f) {
 			isUsingFuel = !isUsingFuel;
 			if (isUsingFuel) {
+				GetComponent<ExtraWeaponController> ().CmdJetpackParticles (playerUniqueID);
 				m_MoveDir.y = m_JumpSpeed / 2;
+			} else {
+				GetComponent<ExtraWeaponController> ().CmdEndJetpackParticles (playerUniqueID);
 			}
 		}
 
 		if (isUsingFuel) {
 			fuelAmount -= Time.fixedDeltaTime;
 			if (fuelAmount <= 0.0f) {
-				isUsingFuel = !isUsingFuel;
+				isUsingFuel = false;
+				GetComponent<ExtraWeaponController> ().CmdEndJetpackParticles (playerUniqueID);
 			}
 		}
 

@@ -69,7 +69,7 @@ public class CustomNetworkManager : NetworkManager {
 		if (id == -1) {
 			Debug.LogError("Game already full, too many players");
 		}
-		
+		player.GetComponent<PlayerController> ().playerUniqueID = id;
 		players.Add(player, id);
         connections.Add(conn, player);
         playerStates[id] = PlayerState.CONNECTED;
@@ -234,6 +234,18 @@ public class CustomNetworkManager : NetworkManager {
 		Vector3 pickupPos = new Vector3 (Random.Range (5, 75), Random.Range (2, 20), Random.Range (5, 75));
 		foreach (GameObject player in players.Keys) {
 			player.GetComponent<TerrainController> ().RpcSpawnPickupBox(pickupPos);
+		}
+	}
+
+	public void SendJetpackParticleID(int id) {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<ExtraWeaponController> ().RpcJetpackParticles (id);
+		}
+	}
+
+	public void SendEndJetpackParticleID(int id) {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<ExtraWeaponController> ().RpcEndJetpackParticles (id);
 		}
 	}
 
