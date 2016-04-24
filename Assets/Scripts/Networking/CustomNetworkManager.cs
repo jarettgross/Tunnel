@@ -242,6 +242,18 @@ public class CustomNetworkManager : NetworkManager {
 		}
 	}
 
+	public void SendDestroyPickupInfo(NetworkInstanceId id) {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<TerrainController> ().RpcDestroyPickupBox(id);
+		}
+	}
+
+	public void SendPickupBoxParticleInfo(Vector3 pos, Quaternion dir, bool isHealthUpgrade) {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<TerrainController> ().RpcPickupBoxParticles(pos, dir, isHealthUpgrade);
+		}
+	}
+
 	public void SendJetpackParticleID(NetworkInstanceId id) {
 		foreach (GameObject player in players.Keys) {
 			player.GetComponent<ExtraWeaponController> ().RpcJetpackParticles (id);

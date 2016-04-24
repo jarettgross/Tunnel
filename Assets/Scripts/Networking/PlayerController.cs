@@ -95,34 +95,36 @@ public class PlayerController : NetworkBehaviour
         m_PreviouslyGrounded = m_CharacterController.isGrounded;
 
 		//Handle player invisibility
-		if (invisibilityRemaining > 0.0f && Input.GetKeyDown (KeyCode.Q)) {
-			if (invisibleCooldown < 0.1f) {
+		if (GetComponent<CharacterClass> ().className == "Stealth") {
+			if (invisibilityRemaining > 0.0f && Input.GetKeyDown (KeyCode.Q)) {
+				if (invisibleCooldown < 0.1f) {
 
-				isInvisible = !isInvisible;
-				if (isInvisible) {
-					GetComponent<ExtraWeaponController> ().CmdInvisiblity (playerUniqueID, true);
-				} else {
-					GetComponent<ExtraWeaponController> ().CmdInvisiblity (playerUniqueID, false);
-					invisibleCooldown = 5.0f;
-					isCooldown = true;
+					isInvisible = !isInvisible;
+					if (isInvisible) {
+						GetComponent<ExtraWeaponController> ().CmdInvisiblity (playerUniqueID, true);
+					} else {
+						GetComponent<ExtraWeaponController> ().CmdInvisiblity (playerUniqueID, false);
+						invisibleCooldown = 5.0f;
+						isCooldown = true;
+					}
 				}
 			}
-		}
 
-		if (isCooldown) { 
-			invisibleCooldown -= Time.deltaTime;
-			if (invisibleCooldown < 0.1f) {
-				isCooldown = false;
+			if (isCooldown) { 
+				invisibleCooldown -= Time.deltaTime;
+				if (invisibleCooldown < 0.1f) {
+					isCooldown = false;
+				}
 			}
-		}
 
-		if (isInvisible) {
-			invisibilityRemaining -= Time.deltaTime;
-		}
+			if (isInvisible) {
+				invisibilityRemaining -= Time.deltaTime;
+			}
 
-		if (invisibilityRemaining <= 0.0f) {
-			isInvisible = false;
-			GetComponent<ExtraWeaponController> ().CmdInvisiblity (playerUniqueID, false);
+			if (invisibilityRemaining <= 0.0f) {
+				isInvisible = false;
+				GetComponent<ExtraWeaponController> ().CmdInvisiblity (playerUniqueID, false);
+			}
 		}
 	}
 

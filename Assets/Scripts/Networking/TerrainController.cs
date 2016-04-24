@@ -6,6 +6,8 @@ using System.Collections.Generic;
 public class TerrainController : NetworkBehaviour {
 
 	public ParticleSystem hitEffect = null;
+	public ParticleSystem pickupBoxEffectHealth = null;
+	public ParticleSystem pickupBoxEffectAmmo = null;
 
 	public Camera playerCamera;
 	public LayerMask layerMask;
@@ -38,6 +40,7 @@ public class TerrainController : NetworkBehaviour {
 		ready = true;
 		readyTime = Time.time;
 
+		CmdSpawnPickupBox ();
 		CmdSpawnPickupBox ();
 	}
 
@@ -110,6 +113,49 @@ public class TerrainController : NetworkBehaviour {
 
 	[ClientRpc]
 	public void RpcSpawnPickupBox(Vector3 pos) {
+		if (!isLocalPlayer)
+			return;
+
 		Instantiate (pickupBox, pos, Quaternion.identity);
+	}
+
+	[Command]
+	public void CmdDestroyPickupBox(NetworkInstanceId id) {
+		networkManager.SendDestroyPickupInfo (id);
+	}
+
+	[ClientRpc]
+	public void RpcDestroyPickupBox(NetworkInstanceId id) {
+		GameObject[] pickupBoxes = GameObject.FindGameObjectsWithTag ("PickupBox");
+		foreach (GameObject pb in pickupBoxes) {
+			if (pb.GetComponent<NetworkIdentity>().netId == id) {
+				Destroy (pb);
+			}
+		}
+	}
+
+	[Command]
+	public void CmdPickupBoxParticles(Vector3 pos, Quaternion dir, bool isHealthUpgrade) {
+		networkManager.SendPickupBoxParticleInfo (pos, dir, isHealthUpgrade);
+	}
+
+	[ClientRpc]
+	public void RpcPickupBoxParticles(Vector3 pos, Quaternion dir, bool isHealthUpgrade) {
+		if (!isLocalPlayer)
+			return;
+
+		if (isHealthUpgrade) {
+			Instantiate (pickupBoxEffectHealth, pos, Quaternion.Euler(0, 90, 0));
+		} else {
+			Instantiate (pickupBoxEffectAmmo, pos, Quaternion.Euler(0, 90, 0));
+		}
+		DestroyPickupBoxParticles ();
+	}
+
+	private void DestroyPickupBoxParticles() {
+		GameObject[] pickupBoxParticleSystems = GameObject.FindGameObjectsWithTag ("PickupBoxParticles");
+		foreach (GameObject pps in pickupBoxParticleSystems) {
+			Destroy (pps, pps.GetComponent<ParticleSystem>().startLifetime);
+		}
 	}
 }

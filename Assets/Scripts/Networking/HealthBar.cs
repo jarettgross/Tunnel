@@ -90,7 +90,9 @@ public class HealthBar : NetworkBehaviour {
 			string invisible = GetComponent<PlayerController>().isInvisible ? "Invisible" : "Visible";
 			string cooldown = GetComponent<PlayerController>().isCooldown ? "Cooldown" : "Ready";
 
-			specialAbilityInfo.text = invisible + "\n" + Mathf.Round(GetComponent<PlayerController>().invisibilityRemaining) + "/20" + "\n" + cooldown;
+			if (GetComponent<CharacterClass> ().className == "Stealth") {
+				specialAbilityInfo.text = invisible + "\n" + Mathf.Round (GetComponent<PlayerController> ().invisibilityRemaining) + "/20" + "\n" + cooldown;
+			}
 		}
 	}
 

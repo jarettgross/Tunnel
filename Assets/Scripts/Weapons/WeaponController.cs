@@ -121,7 +121,7 @@ public class WeaponController : NetworkBehaviour {
 						}
 					} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
 						if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
-							if (GetComponent<PlayerController> ().isInvisible) {
+						if (GetComponent<PlayerController> ().isInvisible) {
 								GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
 							}
 							GetComponent<PlayerController>().isInvisible = false;
