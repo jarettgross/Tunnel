@@ -108,6 +108,7 @@ public class TerrainController : NetworkBehaviour {
 
 	[Command]
 	public void CmdSpawnPickupBox() {
+		NetworkServer.Spawn ((GameObject)Instantiate (pickupBox, new Vector3 (Random.Range (5, 75), Random.Range (2, 20), Random.Range (5, 75)), Quaternion.identity));
 		networkManager.SendPickupInfo ();
 	}
 
@@ -115,8 +116,6 @@ public class TerrainController : NetworkBehaviour {
 	public void RpcSpawnPickupBox(Vector3 pos) {
 		if (!isLocalPlayer)
 			return;
-
-		Instantiate (pickupBox, pos, Quaternion.identity);
 	}
 
 	[Command]
