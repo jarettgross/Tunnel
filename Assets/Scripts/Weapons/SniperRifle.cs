@@ -15,6 +15,7 @@ public class SniperRifle : WeaponBase {
 
 	new void Start () {
 		base.Start();
+
 		scopeCamera = GameObject.Find ("FirstPersonCharacter").GetComponent<Camera> ();
 		mainCameraFOV = scopeCamera.fieldOfView;
 

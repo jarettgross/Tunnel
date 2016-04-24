@@ -14,7 +14,7 @@ public class PlayerGUI : NetworkBehaviour {
 	public float currentHealth;
 
     // player death stuff
-	private int numDeaths = 0;
+	public int numDeaths = 0;
     private float deathTime;
     private bool isDead;
     private const float RESPAWN_TIME = 5.0f;
@@ -137,6 +137,7 @@ public class PlayerGUI : NetworkBehaviour {
             if (Time.time - deathTime > RESPAWN_TIME && numDeaths < 2)
             {
                 PlayerRespawn();
+				GetComponent<ExtraWeaponController> ().CmdEndJetpackParticles (GetComponent<PlayerController>().playerUniqueID);
 				numDeaths++;
             }
         }

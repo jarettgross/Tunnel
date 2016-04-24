@@ -14,6 +14,7 @@ public class HealthBar : NetworkBehaviour {
 	private Text weaponInfo;
 	private Text fuelInfo;
 	private Text specialAbilityInfo;
+	private Text livesRemaining;
 
 	private GameObject currentWeapon;
 
@@ -49,6 +50,9 @@ public class HealthBar : NetworkBehaviour {
 			}
 			if (text.name == "SpecialAbility") {
 				specialAbilityInfo = text;
+			}
+			if (text.name == "Lives") {
+				livesRemaining = text;
 			}
 		}
 
@@ -93,6 +97,8 @@ public class HealthBar : NetworkBehaviour {
 			if (GetComponent<CharacterClass> ().className == "Stealth") {
 				specialAbilityInfo.text = invisible + "\n" + Mathf.Round (GetComponent<PlayerController> ().invisibilityRemaining) + "/20" + "\n" + cooldown;
 			}
+
+			livesRemaining.text = "Lives: " + (3 - GetComponent<PlayerGUI> ().numDeaths).ToString();
 		}
 	}
 
