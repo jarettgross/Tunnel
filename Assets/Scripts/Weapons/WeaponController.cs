@@ -102,48 +102,51 @@ public class WeaponController : NetworkBehaviour {
 
 		if (currentWeapon == null)
 			return;
-			if (GetCurrentWeapon ().currentClipSize != 0) { //can only if you have
-				if (!preventWeaponSwitch) { //can't switch weapons or shoot while throwing a grenade
-					if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
-						if (Input.GetMouseButtonDown (0)) {
-							// Automatic weapon will repeat shooting according firerate
-							if (GetComponent<PlayerController> ().isInvisible) {
-								GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
-							}
-							GetComponent<PlayerController>().isInvisible = false;
-							GetComponent<PlayerController> ().isCooldown = true;
-							GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
-
-							InvokeRepeating ("Shoot", 0f, GetCurrentWeapon ().Cooldown); 
-						} else if (Input.GetMouseButtonUp (0)) {
-							// Stop invoking Shoot
-							CancelInvoke ("Shoot");  
-						}
-					} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
-						if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+		
+		if (GetCurrentWeapon ().currentClipSize > 0) { //can only shoot if you have clips
+			if (!preventWeaponSwitch) { //can't switch weapons or shoot while throwing a grenade
+				if (GetCurrentWeapon ().IsAutomatic) { // Automatic weapon
+					if (Input.GetMouseButtonDown (0)) {
+						// Automatic weapon will repeat shooting according firerate
 						if (GetComponent<PlayerController> ().isInvisible) {
-								GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
-							}
-							GetComponent<PlayerController>().isInvisible = false;
-							GetComponent<PlayerController> ().isCooldown = true;
-							GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
-
-							StartCoroutine (ThrowGrenade ());
+							GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
 						}
-					} else if (!GetCurrentWeapon ().IsAutomatic) { //Non-automatic weapon
-						if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
-							if (GetComponent<PlayerController> ().isInvisible) {
-								GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
-							}
-							GetComponent<PlayerController>().isInvisible = false;
-							GetComponent<PlayerController> ().isCooldown = true;
-							GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
+						GetComponent<PlayerController>().isInvisible = false;
+						GetComponent<PlayerController> ().isCooldown = true;
+						GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
 
-							Shoot ();
+						InvokeRepeating ("Shoot", 0f, GetCurrentWeapon ().Cooldown); 
+					} else if (Input.GetMouseButtonUp (0)) {
+						// Stop invoking Shoot
+						CancelInvoke ("Shoot");  
+					}
+				} else if (!isThrown && GetCurrentWeapon ().GetComponent<Grenade> () != null) { //Grenade
+					if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+					if (GetComponent<PlayerController> ().isInvisible) {
+							GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
 						}
+						GetComponent<PlayerController>().isInvisible = false;
+						GetComponent<PlayerController> ().isCooldown = true;
+						GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
+
+						StartCoroutine (ThrowGrenade ());
+					}
+				} else if (!GetCurrentWeapon ().IsAutomatic) { //Non-automatic weapon
+					if (Input.GetMouseButtonDown (0) && GetCurrentWeapon ().Ready ()) {
+						if (GetComponent<PlayerController> ().isInvisible) {
+							GetComponent<ExtraWeaponController> ().CmdInvisiblity (GetComponent<PlayerController> ().playerUniqueID, false);
+						}
+						GetComponent<PlayerController>().isInvisible = false;
+						GetComponent<PlayerController> ().isCooldown = true;
+						GetComponent<PlayerController> ().invisibleCooldown = 5.0f;
+
+						Shoot ();
 					}
 				}
 			}
+		} else {
+			CancelInvoke ("Shoot");
+		}
 
 
 		// Handle weapon switching with middle mouse scroll
@@ -360,5 +363,6 @@ public class WeaponController : NetworkBehaviour {
 	private void PlayerDied(GameObject player) {
 		Debug.Log("Player " + player + " died");
 		player.transform.position = new Vector3(5, 20, 5);
+		CancelInvoke ("Shoot");
 	}
 }

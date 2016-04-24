@@ -63,7 +63,18 @@ public class PlayerController : NetworkBehaviour
 		m_WalkSpeed = character.WalkSpeed;
 		m_RunSpeed = character.RunSpeed;
 
+		if (character.className == "Explosives") {
+			gameObject.GetComponent<Renderer> ().material.color = new Color (255, 0, 0);
+		} else if (character.className == "Stealth") {
+			gameObject.GetComponent<Renderer> ().material.color = new Color (0, 0, 0);
+		} else if (character.className == "Traps") {
+			gameObject.GetComponent<Renderer> ().material.color = new Color (0, 255, 255);
+		}
+
 		playerUniqueID = GetComponent<NetworkIdentity> ().netId;
+
+		Color pColor = gameObject.GetComponent<Renderer> ().material.color;
+		GetComponent<ExtraWeaponController> ().CmdPlayerColor (pColor.r, pColor.g, pColor.b, playerUniqueID);
 	}
 
 	

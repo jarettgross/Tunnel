@@ -272,6 +272,12 @@ public class CustomNetworkManager : NetworkManager {
 		}
 	}
 
+	public void SendColor(float r, float g, float b, NetworkInstanceId id) {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<ExtraWeaponController> ().RpcPlayerColor (r, g, b, id);
+		}
+	}
+
 
 		/* * * * * * * * * * * * * * * * * 
 		 * Player Messages

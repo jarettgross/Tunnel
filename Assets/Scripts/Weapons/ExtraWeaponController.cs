@@ -93,4 +93,20 @@ public class ExtraWeaponController : NetworkBehaviour {
 			}
 		}
 	}
+
+	[Command]
+	public void CmdPlayerColor(float r, float g, float b, NetworkInstanceId id) {
+		networkManager.SendColor (r, g, b, id);
+	}
+
+	[ClientRpc]
+	public void RpcPlayerColor(float r, float g, float b, NetworkInstanceId id) {
+		GameObject[] players = GameObject.FindGameObjectsWithTag ("Player");
+		foreach (GameObject player in players) {
+			if (player.GetComponent<NetworkIdentity>().netId == id) {
+				player.GetComponent<Renderer> ().material.color = new Color (r, g, b);
+			}
+		}
+	}
+
 }
