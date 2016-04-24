@@ -42,6 +42,8 @@ public class TerrainController : NetworkBehaviour {
 
 		CmdSpawnPickupBox ();
 		CmdSpawnPickupBox ();
+		CmdSpawnPickupBox ();
+		CmdSpawnPickupBox ();
 	}
 
 

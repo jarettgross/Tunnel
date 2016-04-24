@@ -13,7 +13,9 @@ public class RandomPickup : NetworkBehaviour {
 		bool isHealthUpgrade;
 		if (collision.gameObject.tag == "Player") {
 			if (Random.Range(0, 2) == 0) { //give ammo and jetpack fuel to player
-				collision.gameObject.GetComponent<WeaponController>().GetCurrentWeapon().currentClipSize = collision.gameObject.GetComponent<WeaponController>().GetCurrentWeapon().ClipSize;
+				foreach (WeaponBase weapon in collision.gameObject.GetComponent<WeaponController>().weapons) {
+					weapon.currentClipSize = weapon.ClipSize;
+				}
 				isHealthUpgrade = false;
 			} else { //give health and jetpack fuel to player
 				collision.gameObject.GetComponent<PlayerGUI>().currentHealth += 30;

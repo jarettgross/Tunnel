@@ -33,7 +33,7 @@ public class WeaponController : NetworkBehaviour {
 	private int currentWeaponSlot;
 
 	// Array of possible weapons
-	private List<WeaponBase> weapons;
+	public List<WeaponBase> weapons;
 
 	// Currently active weapon
 	private WeaponBase currentWeapon;
@@ -223,29 +223,27 @@ public class WeaponController : NetworkBehaviour {
 		// Temporary
 		GameObject defaultWeapon = (GameObject)Instantiate(cc.DefaultWeapon, Vector3.zero, Quaternion.identity);
 		GameObject classWeapon1 = (GameObject)Instantiate(cc.ClassWeapon1, Vector3.zero, Quaternion.identity);
-		//GameObject classWeapon2 = (GameObject)Instantiate(_classWeapon2, Vector3.zero, Quaternion.identity);
-
+		GameObject classWeapon2 = (GameObject)Instantiate(cc.ClassWeapon2, Vector3.zero, Quaternion.identity);
 
 
 		NetworkServer.SpawnWithClientAuthority(defaultWeapon, connectionToClient);
 		NetworkServer.SpawnWithClientAuthority(classWeapon1, connectionToClient);
+		NetworkServer.SpawnWithClientAuthority(classWeapon2, connectionToClient);
 
-		//NetworkServer.SpawnWithClientAuthority(classWeapon2, connectionToClient);
-
-		RpcInitialize(defaultWeapon, classWeapon1);
+		RpcInitialize(defaultWeapon, classWeapon1, classWeapon2);
 	}
 
 	[ClientRpc]
-	private void RpcInitialize(GameObject _defaultWeapon, GameObject _classWeapon1) {
+	private void RpcInitialize(GameObject _defaultWeapon, GameObject _classWeapon1, GameObject _classWeapon2) {
 
 		WeaponBase defaultWeapon = _defaultWeapon.GetComponent<WeaponBase>();
 		WeaponBase classWeapon1 = _classWeapon1.GetComponent<WeaponBase>();
-		//WeaponBase classWeapon2 = _classWeapon2.GetComponent<WeaponBase>();
+		WeaponBase classWeapon2 = _classWeapon2.GetComponent<WeaponBase>();
 
 		// Add weapons to weapon list
 		AddWeapon(defaultWeapon);
 		AddWeapon(classWeapon1);
-		//AddWeapon(classWeapon2);
+		AddWeapon(classWeapon2);
 
 		// Equip the default weapon
 		DeactivateWeapons();

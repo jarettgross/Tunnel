@@ -92,6 +92,15 @@ public class PlayerGUI : NetworkBehaviour {
     private void PlayerRespawn()
     {
         currentHealth = hitPoints;
+		GetComponent<PlayerController> ().fuelAmount = GetComponent<PlayerController> ().originalFuelAmount;
+		foreach (WeaponBase weapon in GetComponent<WeaponController> ().weapons) {
+			weapon.currentClipSize = weapon.ClipSize;
+		}
+		if (GetComponent<CharacterClass>().className == "Stealth") {
+			GetComponent<PlayerController> ().invisibilityRemaining = 20.0f;
+		}
+
+
         isDead = false;
         Debug.Log("Respawning Player (server): " + Time.time);
         spawnIndex = Random.Range(0, 2);
