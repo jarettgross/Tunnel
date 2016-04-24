@@ -10,7 +10,7 @@ using CoherentNoise.Generation.Fractal;
 
 public class TerrainManager : NetworkBehaviour {
 
-	public int seed;
+	[System.NonSerialized] public int seed = Random.Range(0, 10000);
 	public float scale;
 	public float noiseScale;
 
