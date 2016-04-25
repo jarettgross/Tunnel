@@ -89,7 +89,14 @@ public class HealthBar : NetworkBehaviour {
 			WeaponBase wb = currentWeapon.GetComponent<WeaponBase>();
 			string[] weaponName = currentWeapon.name.Split('_');
 			string[] finalWeaponName = weaponName [0].Split ('(');
-			weaponInfo.text = wb.currentClipSize + "/" + wb.ClipSize + "\n" + finalWeaponName[0];
+
+			// unlimited ammo
+			if (wb.ClipSize == -1) {
+				weaponInfo.text = finalWeaponName[0];
+			} else {
+				weaponInfo.text = wb.currentClipSize + "/" + wb.ClipSize + "\n" + finalWeaponName[0];
+			}
+
 			fuelInfo.text = "Fuel" + "\n" + Mathf.Round(GetComponent<PlayerController>().fuelAmount) + "/" + GetComponent<PlayerController>().originalFuelAmount;
 	
 			string invisible = GetComponent<PlayerController>().isInvisible ? "Invisible" : "Visible";
