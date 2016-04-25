@@ -7,8 +7,8 @@ public class SceneController : NetworkBehaviour {
 
 	public CustomNetworkManager networkManager;
 
-	private const int characterSelectionMenueSceneId = 1;
-	private const int worldSceneId = 2;
+	private const int characterSelectionMenueSceneId = 2;
+	private const int worldSceneId = 3;
 
 	public override void OnStartLocalPlayer() {
 		DontDestroyOnLoad (gameObject);

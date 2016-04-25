@@ -88,7 +88,8 @@ public class HealthBar : NetworkBehaviour {
 		if (currentWeapon != null) {
 			WeaponBase wb = currentWeapon.GetComponent<WeaponBase>();
 			string[] weaponName = currentWeapon.name.Split('_');
-			weaponInfo.text = wb.currentClipSize + "/" + wb.ClipSize + "\n" + weaponName[0];
+			string[] finalWeaponName = weaponName [0].Split ('(');
+			weaponInfo.text = wb.currentClipSize + "/" + wb.ClipSize + "\n" + finalWeaponName[0];
 			fuelInfo.text = "Fuel" + "\n" + Mathf.Round(GetComponent<PlayerController>().fuelAmount) + "/" + GetComponent<PlayerController>().originalFuelAmount;
 	
 			string invisible = GetComponent<PlayerController>().isInvisible ? "Invisible" : "Visible";
