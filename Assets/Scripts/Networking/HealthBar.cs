@@ -14,7 +14,8 @@ public class HealthBar : NetworkBehaviour {
 	private Text weaponInfo;
 	private Text fuelInfo;
 	private Text specialAbilityInfo;
-	private Text livesRemaining;
+	public Text livesRemaining;
+	public Text deathText;
 
 	private GameObject currentWeapon;
 
@@ -53,6 +54,9 @@ public class HealthBar : NetworkBehaviour {
 			}
 			if (text.name == "Lives") {
 				livesRemaining = text;
+			}
+			if (text.name == "DeathText") {
+				deathText = text;
 			}
 		}
 

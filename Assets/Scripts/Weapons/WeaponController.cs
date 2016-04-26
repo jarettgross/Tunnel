@@ -190,6 +190,9 @@ public class WeaponController : NetworkBehaviour {
 	 */ 
 	private void SwitchWeapon(float delta) {
 		if (!preventWeaponSwitch) {
+			if (GetCurrentWeapon().GetComponent<SniperRifle>() != null) {
+				GetCurrentWeapon ().GetComponent<SniperRifle> ().useScope = false;
+			}
 			int newWeaponSlot = currentWeaponSlot;
 
 			if (delta > 0) {
@@ -206,6 +209,18 @@ public class WeaponController : NetworkBehaviour {
 				EquipWeapon (newWeaponSlot);
 			}
 		}
+
+		if (GetCurrentWeapon().GetComponent<SniperRifle>() == null) {
+			foreach (Transform t in transform) {
+				if (t.gameObject.name == "FirstPersonCharacter") {
+					Camera scopeCamera = t.gameObject.GetComponent<Camera> ();
+					if (scopeCamera != null) {
+						scopeCamera.fieldOfView = 55;
+					}
+				}
+			}
+		}
+
 	}
 
 	//Initially deactivate other starting weapons
@@ -282,7 +297,7 @@ public class WeaponController : NetworkBehaviour {
 			PlayerGUI health = collider.GetComponent<PlayerGUI>();
 			if (health != null) {
 				collider.GetComponent<PlayerController> ().PlayHitEffect (transform.forward);
-				CmdHandleShot (collider, GetCurrentWeapon ().gameObject);
+				CmdHandleShot (collider, GetCurrentWeapon ().gameObject, 0);
 			} else {
 				// Send deformation to server
 				GetComponent<TerrainController> ().CmdDeform (hitPosition, GetCurrentWeapon ().DeformationRadius);
@@ -327,10 +342,11 @@ public class WeaponController : NetworkBehaviour {
 			if (col.gameObject.GetComponent<PlayerGUI>() != null) {
 				float distanceToBlast = (grenade.transform.position - col.gameObject.transform.position).magnitude;
 				float damageDropoff = 1 - distanceToBlast / grenade.DeformationRadius; //linear dropoff
-				grenade.damage *= damageDropoff;
-				CmdHandleShot (col.gameObject, grenade.gameObject);
+				CmdHandleShot (col.gameObject, grenade.gameObject, grenade.damage * damageDropoff);
 			}
 		}
+
+		GetComponent<ExtraWeaponController> ().CmdGrenadeParticles (grenade.transform.position, Vector3.up);
 		GetComponent<TerrainController> ().CmdDeform (grenade.transform.position, grenade.DeformationRadius);
 
 		Destroy (currentWeapon.GetComponent<Grenade> ().gameObject.GetComponent<Rigidbody> ());
@@ -345,13 +361,18 @@ public class WeaponController : NetworkBehaviour {
 	 * Perform server side shot calculation
 	 */ 
 	[Command]
-	private void CmdHandleShot(GameObject target, GameObject weapon) {
+	private void CmdHandleShot(GameObject target, GameObject weapon, float damage) {
 
 		Debug.Log("Shooting " + target.name);
 		WeaponBase weaponBase = weapon.GetComponent<WeaponBase>();
 
 		// Apply damage to player
-		bool dead = target.GetComponent<PlayerGUI>().ReceiveDamage(weaponBase.Damage);
+		bool dead = false;
+		if (damage == 0) {
+			dead = target.GetComponent<PlayerGUI>().ReceiveDamage(weaponBase.Damage);
+		} else {
+			dead = target.GetComponent<PlayerGUI>().ReceiveDamage(damage);
+		}
 
 		if (dead) {
 			PlayerDied(target);

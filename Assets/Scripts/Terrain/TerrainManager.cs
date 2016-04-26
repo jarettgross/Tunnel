@@ -10,7 +10,7 @@ using CoherentNoise.Generation.Fractal;
 
 public class TerrainManager : NetworkBehaviour {
 
-	[System.NonSerialized] public int seed;
+	public int seed;
 	public float scale;
 	public float noiseScale;
 
@@ -42,7 +42,6 @@ public class TerrainManager : NetworkBehaviour {
 
 	// Use this for initialization
 	void Start() {
-		seed = Random.Range(0, 10000);
 		UnityEngine.Debug.Log("Start of TerrainManager");
 
 		if (!isClient)

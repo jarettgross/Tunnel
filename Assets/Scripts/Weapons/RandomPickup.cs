@@ -25,7 +25,7 @@ public class RandomPickup : NetworkBehaviour {
 				isHealthUpgrade = true;
 			}
 
-			collision.gameObject.GetComponent<PlayerController> ().fuelAmount += 5;
+			collision.gameObject.GetComponent<PlayerController> ().fuelAmount += 10;
 			if (collision.gameObject.GetComponent<PlayerController> ().fuelAmount > collision.gameObject.GetComponent<PlayerController> ().originalFuelAmount) {
 				collision.gameObject.GetComponent<PlayerController> ().fuelAmount = collision.gameObject.GetComponent<PlayerController> ().originalFuelAmount;
 			}

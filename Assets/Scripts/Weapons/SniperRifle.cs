@@ -11,12 +11,12 @@ public class SniperRifle : WeaponBase {
 	private float mainCameraFOV;
 	private const float SCOPE_FOV = 15;
 
-	private bool useScope = false; //using scope camera or regular camera
+	public bool useScope = false; //using scope camera or regular camera
 
 	new void Start () {
 		base.Start();
 
-		scopeCamera = GameObject.Find ("FirstPersonCharacter").GetComponent<Camera> ();
+		scopeCamera = transform.parent.gameObject.transform.parent.gameObject.GetComponent<Camera> ();
 		mainCameraFOV = scopeCamera.fieldOfView;
 
 		rectCrosshair = new Rect (0, 0, Screen.width, Screen.height);

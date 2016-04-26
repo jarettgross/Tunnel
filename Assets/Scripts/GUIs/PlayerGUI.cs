@@ -92,15 +92,6 @@ public class PlayerGUI : NetworkBehaviour {
     private void PlayerRespawn()
     {
         currentHealth = hitPoints;
-		GetComponent<PlayerController> ().fuelAmount = GetComponent<PlayerController> ().originalFuelAmount;
-		foreach (WeaponBase weapon in GetComponent<WeaponController> ().weapons) {
-			weapon.currentClipSize = weapon.ClipSize;
-		}
-		if (GetComponent<CharacterClass>().className == "Stealth") {
-			GetComponent<PlayerController> ().invisibilityRemaining = 20.0f;
-		}
-
-
         isDead = false;
         Debug.Log("Respawning Player (server): " + Time.time);
         spawnIndex = Random.Range(0, 2);
@@ -111,6 +102,14 @@ public class PlayerGUI : NetworkBehaviour {
     private void RpcPlayerRespawn()
     {
         Debug.Log("Respawning Player (client)");
+		GetComponent<PlayerController> ().fuelAmount = GetComponent<PlayerController> ().originalFuelAmount;
+		foreach (WeaponBase weapon in GetComponent<WeaponController> ().weapons) {
+			weapon.currentClipSize = weapon.ClipSize;
+		}
+		if (GetComponent<CharacterClass>().className == "Stealth") {
+			GetComponent<PlayerController> ().invisibilityRemaining = 20.0f;
+		}
+
         gameObject.transform.position = spawns[spawnIndex];
         gameObject.GetComponent<MeshRenderer>().enabled = true;
         gameObject.GetComponent<CapsuleCollider>().enabled = true;
@@ -130,15 +129,35 @@ public class PlayerGUI : NetworkBehaviour {
         }
     }
 
-    void Update()
-    {
-        if (isDead)
-        {
-            if (Time.time - deathTime > RESPAWN_TIME && numDeaths < 2)
-            {
+	[ClientRpc]
+	private void RpcDisplayDeathText(string text) {
+		if (GetComponent<HealthBar> ().deathText != null) {
+			GetComponent<HealthBar> ().deathText.text = text;
+		}
+	}
+
+	[ClientRpc]
+	private void RpcDisplayLivesCount(string text) {
+		if (GetComponent<HealthBar> ().livesRemaining != null) {
+			GetComponent<HealthBar> ().livesRemaining.text = text;
+		}
+	}
+
+    void Update() {
+        if (isDead) {
+			if (numDeaths < 2) {
+				RpcDisplayDeathText ("YOU DIED" + "\n" + "Respawning in " + Mathf.Round (RESPAWN_TIME - (Time.time - deathTime)));
+			} else {
+				RpcDisplayDeathText ("YOU LOSE");
+			}
+
+            if (Time.time - deathTime > RESPAWN_TIME && numDeaths < 2) {
                 PlayerRespawn();
 				GetComponent<ExtraWeaponController> ().CmdEndJetpackParticles (GetComponent<PlayerController>().playerUniqueID);
 				numDeaths++;
+
+				RpcDisplayLivesCount ("Lives: " + (3 - numDeaths).ToString ());
+				RpcDisplayDeathText ("");
             }
         }
     }
