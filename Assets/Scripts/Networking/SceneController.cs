@@ -10,6 +10,8 @@ public class SceneController : NetworkBehaviour {
 	private const int characterSelectionMenueSceneId = 2;
 	private const int worldSceneId = 3;
 
+	public int worldSeed;
+
 	public override void OnStartLocalPlayer() {
 		DontDestroyOnLoad (gameObject);
 		LoadCharacterSelectionScreen ();
@@ -21,6 +23,7 @@ public class SceneController : NetworkBehaviour {
 			break;
 
 		case worldSceneId:
+			CmdServerSeed ();
 			CmdWorldLoaded();
 			break;
 		}
@@ -114,6 +117,17 @@ public class SceneController : NetworkBehaviour {
 	[Command]
 	public void CmdWorldLoaded() {
 		networkManager.SpawnTerrain();
+	}
+
+	[Command]
+	public void CmdServerSeed() {
+		networkManager.SendServerSeed ();
+	}
+
+	[ClientRpc]
+	public void RpcSeed(int seed) {
+		worldSeed = seed;
+		//Can optionally set other world variables here (lacunarity, persistance, etc.)
 	}
 
 }

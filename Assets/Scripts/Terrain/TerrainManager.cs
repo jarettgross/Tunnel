@@ -53,7 +53,7 @@ public class TerrainManager : NetworkBehaviour {
 
 		functionNoise = new Function (CutoffFunc);
 
-		//perlinNoise = new PerlinGenerator (81, 11, 81, noiseScale, seed, offset, octaves, persistance, lacunarity);
+		seed = GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().worldSeed;
 
 		Stopwatch timer = new Stopwatch ();
 		timer.Start ();
@@ -88,14 +88,6 @@ public class TerrainManager : NetworkBehaviour {
 
 	public void UpdateWorld(Vector3 position) {
 		world.UpdateWorld (position);
-	}
-
-	public void MoveWallsIn() {
-		//Change to velocity
-		world.wallMinX.transform.position = new Vector3 (world.wallMinX.transform.position.x, world.wallMinX.transform.position.y, world.wallMinX.transform.position.z + 10);
-		world.wallMaxX.transform.position = new Vector3 (world.wallMaxX.transform.position.x, world.wallMaxX.transform.position.y, world.wallMaxX.transform.position.z - 10);
-		world.wallMinZ.transform.position = new Vector3 (world.wallMinZ.transform.position.x + 10, world.wallMinZ.transform.position.y, world.wallMinZ.transform.position.z);
-		world.wallMaxZ.transform.position = new Vector3 (world.wallMaxZ.transform.position.x - 10, world.wallMaxZ.transform.position.y, world.wallMaxZ.transform.position.z);
 	}
 
 	public void Redraw() {

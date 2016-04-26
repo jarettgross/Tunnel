@@ -149,6 +149,7 @@ public class PlayerGUI : NetworkBehaviour {
 				RpcDisplayDeathText ("YOU DIED" + "\n" + "Respawning in " + Mathf.Round (RESPAWN_TIME - (Time.time - deathTime)));
 			} else {
 				RpcDisplayDeathText ("YOU LOSE");
+				RpcDisplayLivesCount ("Lives: 0");
 			}
 
             if (Time.time - deathTime > RESPAWN_TIME && numDeaths < 2) {

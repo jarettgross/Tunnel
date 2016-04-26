@@ -28,6 +28,7 @@ public class CustomNetworkManager : NetworkManager {
 		READY
 	};
 
+	public int serverSeed;
 
 	override public void OnStartServer() {
 		Debug.Log ("Server Starting");
@@ -46,6 +47,8 @@ public class CustomNetworkManager : NetworkManager {
         spawns[1] = new Vector3(75, 20, 75);
         spawns[2] = new Vector3(5, 20, 75);
         spawns[3] = new Vector3(75, 20, 5);
+
+		serverSeed = Random.Range (0, 10000);
 	}
 
 	override public void OnServerConnect(NetworkConnection conn) {
@@ -211,6 +214,12 @@ public class CustomNetworkManager : NetworkManager {
 			GameObject terrainManager = (GameObject)Instantiate(terrainManagerPrefab, Vector3.zero, Quaternion.identity);
 			NetworkServer.Spawn(terrainManager);
 			terrainSpawned = true;
+		}
+	}
+
+	public void SendServerSeed() {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<SceneController> ().RpcSeed (serverSeed);
 		}
 	}
 

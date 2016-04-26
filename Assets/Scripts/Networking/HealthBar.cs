@@ -110,7 +110,7 @@ public class HealthBar : NetworkBehaviour {
 				specialAbilityInfo.text = invisible + "\n" + Mathf.Round (GetComponent<PlayerController> ().invisibilityRemaining) + "/20" + "\n" + cooldown;
 			}
 
-			livesRemaining.text = "Lives: " + (3 - GetComponent<PlayerGUI> ().numDeaths).ToString();
+			//livesRemaining.text = "Lives: " + (3 - GetComponent<PlayerGUI> ().numDeaths).ToString();
 		}
 	}
 
