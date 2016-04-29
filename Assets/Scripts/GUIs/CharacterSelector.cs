@@ -77,11 +77,13 @@ public class CharacterSelector : MonoBehaviour {
 			ChangeCharacter ();
 		}
 
-		if (Input.GetKeyDown(KeyCode.Space)) {
+		if (Input.GetKeyDown (KeyCode.Space)) {
 			SetReady ();
 		}
 
-		GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionPlayerStatuses ();
+		if (GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> () != null) {
+			GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionPlayerStatuses ();
+		}
 	}
 
 	//Switch character
