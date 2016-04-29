@@ -2,6 +2,7 @@
 using UnityEngine.Networking;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UI;
 
 public class SceneController : NetworkBehaviour {
 
@@ -46,6 +47,27 @@ public class SceneController : NetworkBehaviour {
 		GetComponent<CharacterClass>().Initialize(cc);
 		CmdUpdateClass(classIndex);
 		CmdCharacterReady ();
+	}
+
+	public void CharacterSelectionPlayerStatuses() {
+		CmdStatuses ();
+	}
+
+	[Command]
+	public void CmdStatuses() {
+		networkManager.SendReadyPlayerInfo ();
+	}
+
+	[ClientRpc]
+	public void RpcStatuses(string statuses) {
+		if (GameObject.Find ("CharacterSelection") != null) {
+			Text[] texts = GameObject.Find ("CharacterSelection").GetComponentsInChildren<Text> ();
+			foreach (Text t in texts) {
+				if (t.name == "OthersReady") {
+					t.text = statuses;
+				}
+			}
+		}
 	}
 
 	[Command]

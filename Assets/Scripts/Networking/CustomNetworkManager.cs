@@ -14,7 +14,7 @@ public class CustomNetworkManager : NetworkManager {
     private Dictionary<NetworkConnection, GameObject> connections;
 
 	// The scene clients should display first
-	private PlayerState[] playerStates;
+	public PlayerState[] playerStates;
 
 	private bool terrainSpawned;
 
@@ -22,7 +22,7 @@ public class CustomNetworkManager : NetworkManager {
     private const int NUM_SPAWNS = 4;
     private Vector3[] spawns;
 
-	enum PlayerState {
+	public enum PlayerState {
 		NOT_CONNECTED,
 		CONNECTED,
 		READY
@@ -284,6 +284,21 @@ public class CustomNetworkManager : NetworkManager {
 	public void SendColor(float r, float g, float b, NetworkInstanceId id) {
 		foreach (GameObject player in players.Keys) {
 			player.GetComponent<ExtraWeaponController> ().RpcPlayerColor (r, g, b, id);
+		}
+	}
+
+	public void SendReadyPlayerInfo() {
+		string readyInfoText = "";
+		for (int i = 0; i < playerStates.Length; i++) {
+			if (playerStates[i] == PlayerState.CONNECTED) {
+				readyInfoText += "Player " + i + ": NOT READY\n";
+			} else if (playerStates[i] == PlayerState.READY) {
+				readyInfoText += "Player " + i + ": READY\n";
+			}
+		}
+
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<SceneController> ().RpcStatuses (readyInfoText);
 		}
 	}
 

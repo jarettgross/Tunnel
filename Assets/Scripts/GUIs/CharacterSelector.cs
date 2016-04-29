@@ -31,6 +31,12 @@ public class CharacterSelector : MonoBehaviour {
 	public Button readyButton;
     public Button startGameButton;
 
+	enum PlayerState {
+		NOT_CONNECTED,
+		CONNECTED,
+		READY
+	};
+
     void Start () {
 		numClasses = characters.Length;
 		container = GameObject.Find ("CharacterContainer").transform;
@@ -74,6 +80,8 @@ public class CharacterSelector : MonoBehaviour {
 		if (Input.GetKeyDown(KeyCode.Space)) {
 			SetReady ();
 		}
+
+		GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().client.connection.playerControllers [0].gameObject.GetComponent<SceneController> ().CharacterSelectionPlayerStatuses ();
 	}
 
 	//Switch character
