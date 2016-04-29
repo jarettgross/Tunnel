@@ -82,7 +82,7 @@ public class HealthBar : NetworkBehaviour {
 			return;
 		}
 
-		if (healthRatio != hasHealth.HealthRatio()) {
+		if (healthRatio > hasHealth.HealthRatio()) {
 			isChangingAlphaUp = true;
 			isDamaged = true;
 		}

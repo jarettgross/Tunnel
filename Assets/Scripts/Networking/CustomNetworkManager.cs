@@ -302,6 +302,12 @@ public class CustomNetworkManager : NetworkManager {
 		}
 	}
 
+	public void SendSetHealth(NetworkInstanceId id) {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<PlayerGUI> ().RpcSetHealth (id);
+		}
+	}
+
 
 		/* * * * * * * * * * * * * * * * * 
 		 * Player Messages

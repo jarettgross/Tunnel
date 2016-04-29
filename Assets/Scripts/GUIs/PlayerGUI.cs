@@ -27,8 +27,6 @@ public class PlayerGUI : NetworkBehaviour {
 	//*****************************
 
 	void Awake() {
-		hitPoints = 100;
-		currentHealth = hitPoints;
         isDead = false;
         // FIXME better spawns
         // FIXME duplicated code in CustomNetworkManager
@@ -42,9 +40,25 @@ public class PlayerGUI : NetworkBehaviour {
 
 	//Need to initialize after awake so that player can get characterClass's healthPoints value
 	public void Initialize() {
+		CmdSetHealth (GetComponent<PlayerController>().playerUniqueID);
 		hitPoints = gameObject.GetComponent<CharacterClass> ().HealthPoints;
 		currentHealth = hitPoints;
     }
+
+	[Command]
+	public void CmdSetHealth(NetworkInstanceId id) {
+		GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().SendSetHealth (id);
+		hitPoints = gameObject.GetComponent<CharacterClass> ().HealthPoints;
+		currentHealth = hitPoints;
+	}
+
+	[ClientRpc]
+	public void RpcSetHealth(NetworkInstanceId id) {
+		if (GetComponent<PlayerController> ().playerUniqueID == id) {
+			hitPoints = gameObject.GetComponent<CharacterClass> ().HealthPoints;
+			currentHealth = hitPoints;
+		}
+	}
 
 	public bool ReceiveDamage(float damageAmount) {
 		currentHealth -= damageAmount;

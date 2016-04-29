@@ -129,6 +129,7 @@ public class SceneController : NetworkBehaviour {
 		gameObject.GetComponent<WeaponController>().Initialize();
 		gameObject.GetComponent<HealthBar>().Initialize();
 		gameObject.GetComponent<PlayerController>().Initialize();
+		gameObject.GetComponent<PlayerGUI> ().Initialize ();
 	}
 
 	[ClientRpc]

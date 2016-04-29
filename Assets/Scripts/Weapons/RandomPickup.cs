@@ -18,7 +18,7 @@ public class RandomPickup : NetworkBehaviour {
 				}
 				isHealthUpgrade = false;
 			} else { //give health and jetpack fuel to player
-				collision.gameObject.GetComponent<PlayerGUI>().currentHealth += 30;
+				collision.gameObject.GetComponent<PlayerGUI>().currentHealth += 50;
 				if (collision.gameObject.GetComponent<PlayerGUI>().currentHealth > collision.gameObject.GetComponent<PlayerGUI>().hitPoints) {
 					collision.gameObject.GetComponent<PlayerGUI> ().currentHealth = collision.gameObject.GetComponent<PlayerGUI> ().hitPoints;
 				}

@@ -337,11 +337,11 @@ public class WeaponController : NetworkBehaviour {
 		yield return new WaitForSeconds(3);
 
 		//Check for grenade collisions
-		Collider[] objectsInExplosion = Physics.OverlapSphere (grenade.GetComponent<Grenade>().gameObject.transform.position, grenade.DeformationRadius);
+		Collider[] objectsInExplosion = Physics.OverlapSphere (grenade.GetComponent<Grenade>().gameObject.transform.position, grenade.DeformationRadius * 2);
 		foreach (Collider col in objectsInExplosion) {
 			if (col.gameObject.GetComponent<PlayerGUI>() != null) {
 				float distanceToBlast = (grenade.transform.position - col.gameObject.transform.position).magnitude;
-				float damageDropoff = 1 - distanceToBlast / grenade.DeformationRadius; //linear dropoff
+				float damageDropoff = 1 - distanceToBlast / (grenade.DeformationRadius * 2); //linear dropoff
 				CmdHandleShot (col.gameObject, grenade.gameObject, grenade.damage * damageDropoff);
 			}
 		}
