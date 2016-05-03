@@ -308,6 +308,12 @@ public class CustomNetworkManager : NetworkManager {
 		}
 	}
 
+	public void SendUpgradeHealth(NetworkInstanceId id, float health) {
+		foreach (GameObject player in players.Keys) {
+			player.GetComponent<PlayerGUI> ().RpcUpgradeHealth (id, health);
+		}
+	}
+
 
 		/* * * * * * * * * * * * * * * * * 
 		 * Player Messages

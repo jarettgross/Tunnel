@@ -22,6 +22,7 @@ public class RandomPickup : NetworkBehaviour {
 				if (collision.gameObject.GetComponent<PlayerGUI>().currentHealth > collision.gameObject.GetComponent<PlayerGUI>().hitPoints) {
 					collision.gameObject.GetComponent<PlayerGUI> ().currentHealth = collision.gameObject.GetComponent<PlayerGUI> ().hitPoints;
 				}
+				collision.gameObject.GetComponent<PlayerGUI> ().CmdUpgradeHealth (collision.gameObject.GetComponent<PlayerController> ().netId, collision.gameObject.GetComponent<PlayerGUI>().currentHealth);
 				isHealthUpgrade = true;
 			}
 

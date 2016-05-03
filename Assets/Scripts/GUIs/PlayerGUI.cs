@@ -60,6 +60,19 @@ public class PlayerGUI : NetworkBehaviour {
 		}
 	}
 
+	[Command]
+	public void CmdUpgradeHealth(NetworkInstanceId id, float health) {
+		GameObject.Find ("Network Manager").GetComponent<CustomNetworkManager> ().SendUpgradeHealth (id, health);
+		currentHealth = health;
+	}
+
+	[ClientRpc]
+	public void RpcUpgradeHealth(NetworkInstanceId id, float health) {
+		if (GetComponent<PlayerController> ().playerUniqueID == id) {
+			currentHealth = health;
+		}
+	}
+
 	public bool ReceiveDamage(float damageAmount) {
 		currentHealth -= damageAmount;
 		if (currentHealth <= 0) {
